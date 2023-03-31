@@ -1,0 +1,243 @@
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["fullTextSearch", "fullTextIndex"]
+}
+
+// NOTE - Commit this part will break vercel deployment
+// generator erd {
+//     provider = "prisma-erd-generator"
+//     output   = "erd.pdf"
+// }
+
+datasource db {
+    provider          = "mysql"
+    url               = env("DATABASE_URL")
+    shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+    relationMode      = "prisma"
+}
+
+enum Gender {
+    M
+    F
+}
+
+enum ClothSize {
+    S
+    M
+    L
+    XL
+    XXl
+}
+
+enum OrderStatus {
+    INPROCESS
+    SHIPPED
+    CANCELLED
+}
+
+model Comment {
+    id        String   @id @default(cuid())
+    productId String
+    userId    String
+    content   String?  @db.Text
+    rating    Int
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    product Product @relation(fields: [productId], references: [code], onDelete: Cascade)
+    user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, productId])
+    @@index([productId])
+    @@index([userId])
+    @@map("comments")
+}
+
+model Product {
+    code          String          @id @default(cuid())
+    name          String          @unique @db.VarChar(50)
+    description   String?         @db.Text
+    buyPrice      Decimal         @db.Decimal(10, 2)
+    comments      Comment[]
+    productLine   String
+    productDetail ProductDetail[]
+
+    line ProductLine @relation(fields: [productLine], references: [id], onDelete: Cascade)
+
+    @@index([productLine])
+    @@fulltext([name])
+    @@map("products")
+}
+
+model ProductInStock {
+    id              String    @id @default(cuid())
+    productDetailId String
+    quantity        Int
+    size            ClothSize
+
+    productDetail ProductDetail @relation(fields: [productDetailId], references: [id])
+
+    @@unique([productDetailId, size])
+    @@map("product_in_stock")
+}
+
+model ProductDetail {
+    id             String           @id @default(cuid())
+    image          String           @db.Text
+    productCode    String
+    colorCode      String           @db.Char(6)
+    // tailwindColor  String           @default(dbgenerated("( CONCAT('bg-[#', colorCode, ']'))"))
+    cartItems      CartItem[]
+    orderDetail    OrderDetail[]
+    productInStock ProductInStock[]
+
+    product Product @relation(fields: [productCode], references: [code], onDelete: Cascade)
+
+    @@unique([productCode, colorCode])
+    @@map("product_details")
+}
+
+model ProductLine {
+    id              String    @id @default(cuid())
+    type            String    @db.VarChar(50)
+    gender          Gender
+    textDescription String?   @db.Text
+    htmlDescription String?   @db.Text
+    products        Product[]
+
+    @@unique([type, gender])
+    @@map("productlines")
+}
+
+model Order {
+    orderNumber    String        @id @default(cuid())
+    orderDate      DateTime      @default(now())
+    shippedDate    DateTime      @default(now())
+    addressId      String
+    status         OrderStatus   @default(INPROCESS)
+    comments       String?       @db.Text
+    customerNumber String
+    orderdetail    OrderDetail[]
+
+    customer User    @relation(fields: [customerNumber], references: [id], onDelete: Cascade)
+    address  Address @relation(fields: [addressId], references: [id])
+
+    @@index([customerNumber])
+    @@index([addressId])
+    @@map("orders")
+}
+
+model OrderDetail {
+    orderNumber       String
+    productDetailId   String
+    quantityInOrdered Int
+    priceEach         Decimal   @db.Decimal(10, 2)
+    size              ClothSize
+    orderLineNumber   Int?      @db.SmallInt
+
+    order         Order         @relation(fields: [orderNumber], references: [orderNumber], onDelete: Cascade)
+    productDetail ProductDetail @relation(fields: [productDetailId], references: [id], onDelete: Cascade)
+
+    @@id([orderNumber, productDetailId])
+    @@index([orderNumber])
+    @@index([productDetailId])
+    @@map("orderdetails")
+}
+
+model Cart {
+    id       String     @id @default(cuid())
+    cartItem CartItem[]
+    userId   String     @unique
+    user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@map("cart")
+}
+
+model CartItem {
+    id              String    @id @default(cuid())
+    productDetailId String
+    cartId          String
+    numberOfItems   Int       @default(1)
+    size            ClothSize
+
+    productDetail ProductDetail @relation(fields: [productDetailId], references: [id], onDelete: Cascade)
+    cart          Cart          @relation(fields: [cartId], references: [id], onDelete: Cascade)
+
+    @@unique([productDetailId, cartId, size])
+    @@index([productDetailId])
+    @@index([cartId])
+    @@map("cart_item")
+}
+
+model User {
+    id            String    @id @default(cuid())
+    name          String?
+    email         String    @unique
+    emailVerified DateTime?
+    image         String?
+    phone         String?   @db.VarChar(50)
+    isAdmin       Boolean   @default(false)
+    status        Boolean   @default(true)
+    address       Address[]
+    accounts      Account[]
+    sessions      Session[]
+    order         Order[]
+    cart          Cart?
+    comment       Comment[]
+}
+
+model Address {
+    id        String  @id @default(cuid())
+    userId    String
+    receiver  String  @db.VarChar(50)
+    phone     String  @db.VarChar(50)
+    city      String  @db.VarChar(50)
+    district  String  @db.VarChar(50)
+    ward      String  @db.VarChar(50)
+    detail    String  @db.Text
+    isDefault Boolean @default(false)
+
+    user  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    Order Order[]
+
+    @@index([userId])
+    @@map("addresses")
+}
+
+// Necessary for Next auth
+model Account {
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String? @db.Text
+    access_token      String? @db.Text
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String? @db.Text
+    session_state     String?
+    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+    @@index([userId])
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+}
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+}

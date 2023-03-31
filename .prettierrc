@@ -1,0 +1,12 @@
+{
+  "arrowParens": "always",
+  "embeddedLanguageFormatting": "auto",
+  "htmlWhitespaceSensitivity": "css",
+  "insertPragma": false,
+  "bracketSameLine": true,
+  "endOfLine": "lf",
+  "printWidth": 100,
+  "useTabs": false,
+  "semi": true,
+  "tabWidth": 2
+}

@@ -1,0 +1,15 @@
+{
+  "dotenv.enableAutocloaking": false,
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "files.insertFinalNewline": true,
+  "conventionalCommits.scopes": [
+    "api",
+    "web",
+    "deps",
+    "database"
+  ]
+}
