@@ -23,7 +23,7 @@ export default function Register({
                   </div>
                   <div className="btn-wrapper text-center">
                     <button
-                      className="mr-1 mb-1 inline-flex items-center rounded bg-white px-4 py-2 text-xs font-normal uppercase text-[#334155] shadow outline-none transition-all duration-150 ease-linear focus:outline-none hover:shadow-md active:bg-[#F8FAFC]"
+                      className="mb-1 mr-1 inline-flex items-center rounded bg-white px-4 py-2 text-xs font-normal uppercase text-[#334155] shadow outline-none transition-all duration-150 ease-linear focus:outline-none hover:shadow-md active:bg-[#F8FAFC]"
                       type="button"
                       onClick={() =>
                         signIn(providers.google.id, {
@@ -120,7 +120,7 @@ export default function Register({
                       </div> */}
                       <div className="w-[100%] text-right">
                         <span className="text-[#0EA5E9]">
-                          <Link href="/auth/signin">
+                          <Link legacyBehavior href="/auth/signin">
                             <a>I want to sign in!</a>
                           </Link>
                         </span>
@@ -128,7 +128,7 @@ export default function Register({
                     </div>
                     <div className="mt-6 text-center">
                       <button
-                        className="mr-1 mb-1 w-full rounded bg-[#1E293B] px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear focus:outline-none hover:shadow-lg active:bg-[#475569]"
+                        className="mb-1 mr-1 w-full rounded bg-[#1E293B] px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear focus:outline-none hover:shadow-lg active:bg-[#475569]"
                         type="submit">
                         Create Account
                       </button>

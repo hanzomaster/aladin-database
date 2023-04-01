@@ -8,7 +8,7 @@ export default function Navbar() {
       <nav className="navbar-expand-lg absolute top-0 z-50 flex w-full flex-wrap items-center justify-between px-2 py-3">
         <div className="container mx-auto flex flex-wrap items-center justify-between px-4">
           <div className="relative flex w-full justify-between lg:static lg:block lg:w-auto lg:justify-start">
-            <Link href="/home">
+            <Link legacyBehavior href="/home">
               <a className="mr-4 inline-block whitespace-nowrap py-2 text-lg font-bold uppercase leading-relaxed text-white">
                 Aladin
               </a>
@@ -55,9 +55,9 @@ export default function Navbar() {
               </li>
 
               <li className="flex items-center">
-                <Link href="/">
+                <Link legacyBehavior href="/">
                   <button
-                    className="active:bg-blueGray-50 ml-3 mb-3 rounded bg-white px-4 py-2 text-xs font-bold uppercase text-[#334155] shadow outline-none transition-all duration-150 ease-linear focus:outline-none hover:shadow-md lg:mr-1 lg:mb-0"
+                    className="active:bg-blueGray-50 mb-3 ml-3 rounded bg-white px-4 py-2 text-xs font-bold uppercase text-[#334155] shadow outline-none transition-all duration-150 ease-linear focus:outline-none hover:shadow-md lg:mb-0 lg:mr-1"
                     type="button">
                     <i className="fas fa-arrow-alt-circle-down"></i> Home
                   </button>

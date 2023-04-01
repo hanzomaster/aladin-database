@@ -139,7 +139,7 @@ const Footer = () => {
               {products.map((product) => {
                 return (
                   <>
-                    <Link href={"/home?name=" + product.name}>
+                    <Link legacyBehavior href={"/home?name=" + product.name}>
                       <p className="mb-4">
                         <a href={"/home?name=" + product.name} className="text-gray-600">
                           {product.name}
@@ -155,7 +155,7 @@ const Footer = () => {
                 Đường dẫn
               </h6>
               <p className="mb-4">
-                <Link href="/home">
+                <Link legacyBehavior href="/home">
                   <a href="#!" className="text-gray-600">
                     Trang chủ
                   </a>
@@ -167,7 +167,7 @@ const Footer = () => {
                 </a>
               </p>
               <p className="mb-4">
-                <Link href="/purchase">
+                <Link legacyBehavior href="/purchase">
                   <a href="#!" className="text-gray-600">
                     Đơn hàng
                   </a>
@@ -201,7 +201,7 @@ const Footer = () => {
                   Cầu Giấy, Hà Nội, Việt Nam
                 </p>
               </a>
-              <Link href="mailto:aladin.w22g4@gmail.com?subject=Help me">
+              <Link legacyBehavior href="mailto:aladin.w22g4@gmail.com?subject=Help me">
                 <p className="mb-4 flex cursor-pointer items-center justify-center md:justify-start">
                   <svg
                     aria-hidden="true"
@@ -256,7 +256,7 @@ const Footer = () => {
         </div>
         <div className="bg-[#dbeafd] p-6 text-center">
           <span>Aladin:</span>
-          <Link href="/home">
+          <Link legacyBehavior href="/home">
             <a className="font-semibold text-gray-600" href="https://tailwind-elements.com/">
               Ecommerce fashion website
             </a>

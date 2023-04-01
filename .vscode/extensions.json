@@ -7,7 +7,6 @@
 		"Prisma.prisma",
 		"bradlc.vscode-tailwindcss",
 		"dbaeumer.vscode-eslint",
-		"dotenv.dotenv-vscode"
 	],
 	// List of extensions recommended by VS Code that should not be recommended for users of this workspace.
 	"unwantedRecommendations": []

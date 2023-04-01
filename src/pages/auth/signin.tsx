@@ -46,7 +46,7 @@ export default function Login({
 
                     <div className="mt-6 text-center">
                       <button
-                        className="mr-1 mb-1 mt-3 w-full rounded bg-[#1E293B] px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear focus:outline-none hover:shadow-lg active:bg-[#475569]"
+                        className="mb-1 mr-1 mt-3 w-full rounded bg-[#1E293B] px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear focus:outline-none hover:shadow-lg active:bg-[#475569]"
                         type="submit">
                         Sign In
                       </button>
@@ -56,7 +56,7 @@ export default function Login({
                     </div>
                     <div className="w-full text-center">
                       <button
-                        className="mr-1 mb-1 flex w-full items-center  justify-center rounded bg-white px-4 py-2 text-xs font-normal uppercase text-[#334155] shadow outline-none transition-all duration-150 ease-linear focus:outline-none hover:shadow-md active:bg-[#F8FAFC]"
+                        className="mb-1 mr-1 flex w-full items-center  justify-center rounded bg-white px-4 py-2 text-xs font-normal uppercase text-[#334155] shadow outline-none transition-all duration-150 ease-linear focus:outline-none hover:shadow-md active:bg-[#F8FAFC]"
                         type="button"
                         onClick={() =>
                           signIn(providers.google.id, {
@@ -78,7 +78,7 @@ export default function Login({
               </div>
               <div className="relative mt-6 flex flex-wrap">
                 <div className="w-full text-right">
-                  <Link href="/auth/register">
+                  <Link legacyBehavior href="/auth/register">
                     <a className="text-gray-900">
                       <small>Create new account</small>
                     </a>
