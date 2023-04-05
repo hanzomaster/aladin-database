@@ -60,12 +60,30 @@ model Product {
     comments      Comment[]
     productLine   String
     productDetail ProductDetail[]
+    report        Report[]
 
     line ProductLine @relation(fields: [productLine], references: [id], onDelete: Cascade)
 
     @@index([productLine])
     @@fulltext([name])
     @@map("products")
+}
+
+model Report {
+    id        String   @id @default(cuid())
+    productId String
+    userId    String
+    content   String?  @db.Text
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    product Product @relation(fields: [productId], references: [code], onDelete: Cascade)
+    user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, productId])
+    @@index([productId])
+    @@index([userId])
+    @@map("reports")
 }
 
 model ProductInStock {
@@ -183,6 +201,7 @@ model User {
     order         Order[]
     cart          Cart?
     comment       Comment[]
+    Report        Report[]
 }
 
 model Address {
