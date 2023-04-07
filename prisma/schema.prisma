@@ -43,6 +43,10 @@ model Comment {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
+    childId       String?  @unique
+    childComment  Comment? @relation("reply", fields: [childId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+    parentComment Comment? @relation("reply")
+
     product Product @relation(fields: [productId], references: [code], onDelete: Cascade)
     user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
