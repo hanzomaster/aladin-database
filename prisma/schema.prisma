@@ -12,7 +12,7 @@ generator client {
 datasource db {
     provider     = "mysql"
     url          = env("DATABASE_URL")
-    relationMode = "prisma"
+    relationMode = "foreignKeys"
 }
 
 enum Gender {
@@ -29,11 +29,14 @@ enum ClothSize {
 }
 
 enum OrderStatus {
-    CONFIRMATION_PENDING
+    CONFIRM_PENDING
     INPROCESS
     SHIPPED
-    CANCELLED_PENDING
-    CANCELLED
+    COMPLETED
+    CANCEL_PENDING
+    CANCEL
+    RETURN_PENDING
+    RETURN
 }
 
 model Comment {
@@ -45,62 +48,38 @@ model Comment {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    childId       String?  @unique
-    childComment  Comment? @relation("reply", fields: [childId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-    parentComment Comment? @relation("reply")
-
     product Product @relation(fields: [productId], references: [code], onDelete: Cascade)
     user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@unique([userId, productId])
-    @@index([productId])
-    @@index([userId])
     @@map("comments")
 }
 
 model Product {
-    code          String          @id @default(cuid())
-    name          String          @unique @db.VarChar(50)
-    description   String?         @db.Text
-    buyPrice      Decimal         @db.Decimal(10, 2)
-    comments      Comment[]
-    productLine   String
-    productDetail ProductDetail[]
-    report        Report[]
+    code            String          @id @default(cuid())
+    name            String          @unique @db.VarChar(50)
+    description     String?         @db.Text
+    buyPrice        Decimal         @db.Decimal(10, 2)
+    comments        Comment[]
+    productLine     String
+    onSale          Boolean         @default(true)
+    stopSellingFrom DateTime?
+    productDetail   ProductDetail[]
 
     line ProductLine @relation(fields: [productLine], references: [id], onDelete: Cascade)
 
-    @@index([productLine])
     @@fulltext([name])
     @@map("products")
 }
 
-model Report {
-    id        String   @id @default(cuid())
-    productId String
-    userId    String
-    content   String?  @db.Text
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    product Product @relation(fields: [productId], references: [code], onDelete: Cascade)
-    user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-    @@unique([userId, productId])
-    @@index([productId])
-    @@index([userId])
-    @@map("reports")
-}
-
 model ProductInStock {
-    id              String    @id @default(cuid())
     productDetailId String
     quantity        Int
     size            ClothSize
 
-    productDetail ProductDetail @relation(fields: [productDetailId], references: [id])
+    productDetail ProductDetail @relation(fields: [productDetailId], references: [id], onDelete: Cascade)
 
-    @@unique([productDetailId, size])
+    @@id([productDetailId, size])
     @@map("product_in_stock")
 }
 
@@ -135,19 +114,18 @@ model ProductLine {
 model Order {
     orderNumber    String        @id @default(cuid())
     orderDate      DateTime      @default(now())
-    shippedDate    DateTime      @default(now())
+    shippedDate    DateTime
     addressId      String
-    status         OrderStatus   @default(CONFIRMATION_PENDING)
+    status         OrderStatus   @default(CONFIRM_PENDING)
     comments       String?       @db.Text
     cancelReason   String?       @db.Text
+    returnReason   String?       @db.Text
     customerNumber String
     orderdetail    OrderDetail[]
 
     customer User    @relation(fields: [customerNumber], references: [id], onDelete: Cascade)
     address  Address @relation(fields: [addressId], references: [id])
 
-    @@index([customerNumber])
-    @@index([addressId])
     @@map("orders")
 }
 
@@ -163,8 +141,6 @@ model OrderDetail {
     productDetail ProductDetail @relation(fields: [productDetailId], references: [id], onDelete: Cascade)
 
     @@id([orderNumber, productDetailId])
-    @@index([orderNumber])
-    @@index([productDetailId])
     @@map("orderdetails")
 }
 
@@ -181,15 +157,13 @@ model CartItem {
     id              String    @id @default(cuid())
     productDetailId String
     cartId          String
-    numberOfItems   Int       @default(1)
     size            ClothSize
+    numberOfItems   Int       @default(1)
 
     productDetail ProductDetail @relation(fields: [productDetailId], references: [id], onDelete: Cascade)
     cart          Cart          @relation(fields: [cartId], references: [id], onDelete: Cascade)
 
     @@unique([productDetailId, cartId, size])
-    @@index([productDetailId])
-    @@index([cartId])
     @@map("cart_item")
 }
 
@@ -208,7 +182,6 @@ model User {
     order         Order[]
     cart          Cart?
     comment       Comment[]
-    Report        Report[]
 }
 
 model Address {
@@ -225,7 +198,6 @@ model Address {
     user  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
     Order Order[]
 
-    @@index([userId])
     @@map("addresses")
 }
 
@@ -246,7 +218,6 @@ model Account {
     user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@unique([provider, providerAccountId])
-    @@index([userId])
 }
 
 model Session {
@@ -255,8 +226,6 @@ model Session {
     userId       String
     expires      DateTime
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-    @@index([userId])
 }
 
 model VerificationToken {
