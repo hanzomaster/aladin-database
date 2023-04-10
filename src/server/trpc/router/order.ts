@@ -65,7 +65,7 @@ export const orderRouter = router({
     .input(
       z
         .object({
-          comment: z.string(),
+          note: z.string(),
           address: z.object({
             receiver: z.string(),
             phone: z.string(),
@@ -133,7 +133,7 @@ export const orderRouter = router({
                 productDetailId: cartItem.productDetail.id,
               })),
             },
-            comments: input.comment,
+            note: input.note,
           },
         });
       }
@@ -164,7 +164,7 @@ export const orderRouter = router({
                 productDetailId: cartItem.productDetail.id,
               })),
             },
-            comments: input.comment,
+            note: input.note,
           },
         });
       await ctx.prisma.cart.update({
@@ -219,7 +219,7 @@ export const orderRouter = router({
           orderNumber: input.orderNumber,
         },
         data: {
-          status: OrderStatus.CANCELLED,
+          status: OrderStatus.CANCEL,
         },
       });
     }),

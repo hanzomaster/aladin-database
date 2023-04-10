@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import createOrders from "./Order";
 import createProducts from "./Product";
 import createProductLines from "./ProductLine";
 import createUsers from "./User";
@@ -12,6 +13,9 @@ async function main() {
       console.log("Products created");
       createUsers(prisma).then(() => {
         console.log("Users created");
+        createOrders(prisma).then(() => {
+          console.log("Orders created");
+        });
       });
     });
   });

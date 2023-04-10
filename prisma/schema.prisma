@@ -114,10 +114,10 @@ model ProductLine {
 model Order {
     orderNumber    String        @id @default(cuid())
     orderDate      DateTime      @default(now())
-    shippedDate    DateTime
+    shippedDate    DateTime?
     addressId      String
     status         OrderStatus   @default(CONFIRM_PENDING)
-    comments       String?       @db.Text
+    note           String?       @db.Text
     cancelReason   String?       @db.Text
     returnReason   String?       @db.Text
     customerNumber String

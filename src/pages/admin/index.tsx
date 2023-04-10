@@ -12,7 +12,7 @@ import { trpc } from "../../utils/trpc";
 function getSumAmountOrders(orders: inferRouterOutputs<AppRouter>["order"]["getAll"]) {
   let sumAmount = 0;
   orders?.map((order) => {
-    if (order.status !== OrderStatus.CANCELLED) sumAmount += getAmountOrder(order?.orderdetail);
+    if (order.status !== OrderStatus.CANCEL) sumAmount += getAmountOrder(order?.orderdetail);
   });
   return sumAmount;
 }
