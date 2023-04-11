@@ -23,7 +23,7 @@ const OrderDetailAdmin = () => {
       <NavbarAdmin />
 
       <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />
-      <div className="p- p- mx-1 py-20 px-4 md:px-6 2xl:container 2xl:mx-auto 2xl:px-20">
+      <div className="p- p- mx-1 px-4 py-20 2xl:container md:px-6 2xl:mx-auto 2xl:px-20">
         <div className="item-start flex flex-col justify-start space-y-2 ">
           <h1 className="text-3xl font-semibold leading-7 text-gray-800 lg:text-4xl  lg:leading-9">
             Đơn hàng {id}
@@ -49,7 +49,7 @@ const OrderDetailAdmin = () => {
                 );
               })}
             </div>
-            <div className="flex w-full flex-col items-stretch justify-center space-y-4 md:flex-row md:space-y-0 md:space-x-6 xl:space-x-8">
+            <div className="flex w-full flex-col items-stretch justify-center space-y-4 md:flex-row md:space-x-6 md:space-y-0 xl:space-x-8">
               <div className="flex w-full flex-col space-y-6 bg-gray-50 px-4 py-6 md:p-6 xl:p-8   ">
                 <h3 className="text-xl font-semibold leading-5 text-gray-800">Summary</h3>
                 <div className="flex w-full flex-col items-center justify-center space-y-4 border-b border-gray-200 pb-4">
@@ -157,7 +157,7 @@ const OrderDetailAdmin = () => {
                       Ghi chú:
                     </p>
                     <p className=" w-56 text-center text-sm leading-5 text-gray-600 md:text-left lg:w-full xl:w-56">
-                      {order?.comments}
+                      {order?.note}
                     </p>
                   </div>
                 </div>
