@@ -5,8 +5,8 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { Fragment, useState } from "react";
 import Select from "react-select";
-import NavBar from "../components/navbar";
 import { useToast } from "../components/Toast";
+import NavBar from "../components/navbar";
 import useLocationForm from "../constants/useLocationForm";
 import { checkout } from "../utils/checkout";
 import { trpc } from "../utils/trpc";
@@ -53,7 +53,7 @@ const CheckOut = () => {
     setDetailAddress(event.target.value);
   };
 
-  const [comment, setComment] = useState("");
+  const [note, setNote] = useState("");
 
   // handle onlick dialog button
   const [isDefault, setIsDefault] = useState(false);
@@ -77,12 +77,12 @@ const CheckOut = () => {
   const handleCheckOutBtnClicked = () => {
     if (isDefault) {
       mutation.mutate({
-        comment: comment ?? "",
+        note: note ?? "",
         addressId: idAddress,
       });
     } else {
       mutation.mutate({
-        comment: comment ?? "",
+        note: note ?? "",
         address: {
           phone: phone ?? "",
           receiver: name as string,
@@ -125,7 +125,7 @@ const CheckOut = () => {
         <section className="">
           <NavBar />
         </section>
-        <div className="p- mx-1 gap-5 py-10 px-32">
+        <div className="p- mx-1 gap-5 px-32 py-10">
           <div className="mx-auto mt-10 flex w-full flex-col px-0 md:flex-row">
             <div className="flex flex-col md:w-full">
               <h2 className="text-heading mb-4 font-bold md:text-xl ">Địa chỉ giao hàng:</h2>
@@ -364,7 +364,7 @@ const CheckOut = () => {
                       Ghi chú (Nếu có)
                     </label>
                     <textarea
-                      onChange={(e) => setComment(e.target.value)}
+                      onChange={(e) => setNote(e.target.value)}
                       name="note"
                       className="focus:ring-black-600 flex w-full resize-none items-center rounded border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-1"
                       placeholder="Notes for delivery"></textarea>
@@ -401,7 +401,7 @@ const CheckOut = () => {
               </form>
             </div>
             <div className="ml-0 flex w-full flex-col lg:ml-12 lg:w-2/5">
-              <div className="2xl:ps-4 pt-12 md:pt-0">
+              <div className="pt-12 md:pt-0 2xl:ps-4">
                 <h2 className="text-xl font-bold">Đơn hàng</h2>
                 <div className="mt-8 ">
                   <div className="flex h-80 w-auto flex-col space-y-4 overflow-y-scroll border-black scrollbar-thin scrollbar-none ">
@@ -419,7 +419,7 @@ const CheckOut = () => {
                         return (
                           <li
                             key={product.productDetailId}
-                            className="flex rounded-lg bg-slate-50 py-6 px-1">
+                            className="flex rounded-lg bg-slate-50 px-1 py-6">
                             <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                               <div className="relative h-full w-full">
                                 <Image
@@ -480,22 +480,22 @@ const CheckOut = () => {
                     Số lượng sản phẩm: {cartData?.cartItem.length}
                   </h2>
                 </div>
-                <div className="text-heading flex w-full items-center border-b border-gray-300 py-4 text-sm font-semibold last:border-b-0 last:pb-0 last:text-base lg:py-5 lg:px-3">
+                <div className="text-heading flex w-full items-center border-b border-gray-300 py-4 text-sm font-semibold last:border-b-0 last:pb-0 last:text-base lg:px-3 lg:py-5">
                   Giá đơn hàng
                   <span className="ml-2 text-base">
                     {(total * 1000).toLocaleString("vi-VN", {
                       style: "currency",
                       currency: "VND",
                     })}
-                    <small className="mr-3 ml-2  rounded-full bg-red-700 px-2 tracking-widest text-white">
+                    <small className="ml-2 mr-3  rounded-full bg-red-700 px-2 tracking-widest text-white">
                       -40&#37;
                     </small>
                   </span>
                 </div>
-                <div className="text-heading flex w-full items-center border-b border-gray-300 py-4 text-sm font-semibold last:border-b-0 last:pb-0 last:text-base lg:py-5 lg:px-3">
+                <div className="text-heading flex w-full items-center border-b border-gray-300 py-4 text-sm font-semibold last:border-b-0 last:pb-0 last:text-base lg:px-3 lg:py-5">
                   Phí ship<span className="ml-2">0&#8363;</span>
                 </div>
-                <div className="text-heading flex w-full items-center border-b border-gray-300 py-4 text-sm font-semibold last:border-b-0 last:pb-0 last:text-base lg:py-5 lg:px-3">
+                <div className="text-heading flex w-full items-center border-b border-gray-300 py-4 text-sm font-semibold last:border-b-0 last:pb-0 last:text-base lg:px-3 lg:py-5">
                   Tổng
                   <span className="ml-2">
                     {(total * 1000).toLocaleString("vi-VN", {
