@@ -47,7 +47,8 @@ const Comment = ({
       <button
         className="text-[#0070f3] hover:text-[#0070f3]/80"
         onClick={openModal}
-        disabled={false}>
+        disabled={isDisable}
+        hidden={isDisable}>
         Đánh giá
       </button>
       <Transition appear show={isOpen} as={Fragment}>
