@@ -101,7 +101,7 @@ const CartItem = ({ product }: any) => {
                 onChange={handleChange}
               />
             </div>
-            SLLLL:
+            Kho:
             {stockData?.quantity}
           </div>
 
