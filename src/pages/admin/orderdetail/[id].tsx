@@ -2,6 +2,11 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import NavbarAdmin from "../../../components/admin/NavbarAdmin";
 import OrderedItem from "../../../components/user/OrderedItem";
+import { Dialog, Transition } from "@headlessui/react";
+import { useState, Fragment } from "react";
+import { Listbox } from "@headlessui/react";
+import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+
 import { trpc } from "../../../utils/trpc";
 
 const OrderDetailAdmin = () => {
@@ -17,13 +22,43 @@ const OrderDetailAdmin = () => {
     });
   };
 
+  const [isOpen, setIsOpen] = useState(false);
+  const openModal = () => setIsOpen(true);
+  const handleSubmit = () => {
+    console.log({
+      selected: selected,
+      nameShipper: nameShipper,
+      phoneShipper: phoneShipper,
+    });
+    setIsOpen(false);
+  };
+  const closeModal = () => {
+    setIsOpen(false);
+  };
+
+  const handleUpdateStatus = () => {
+    setIsOpen(false);
+  };
+
+  const [nameShipper, setNameShipper] = useState("");
+  const [phoneShipper, setPhoneShipper] = useState("");
+
+  const people = [
+    { name: "Giao hàng nhanh (GHN)" },
+    { name: "J&T Express" },
+    { name: "Giao hàng tiết kiệm (GHTK)" },
+    { name: "Viettel Post" },
+    { name: "Vietnam Post" },
+  ];
+  const [selected, setSelected] = useState(people[0]);
+
   const { data: order } = trpc.order.getOneWhere.useQuery({ orderNumber: id as string });
   return (
     <>
       <NavbarAdmin />
 
       <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />
-      <div className="p- p- mx-1 py-20 px-4 md:px-6 2xl:container 2xl:mx-auto 2xl:px-20">
+      <div className="p- p- mx-1 px-4 py-20 2xl:container md:px-6 2xl:mx-auto 2xl:px-20">
         <div className="item-start flex flex-col justify-start space-y-2 ">
           <h1 className="text-3xl font-semibold leading-7 text-gray-800 lg:text-4xl  lg:leading-9">
             Đơn hàng {id}
@@ -49,7 +84,7 @@ const OrderDetailAdmin = () => {
                 );
               })}
             </div>
-            <div className="flex w-full flex-col items-stretch justify-center space-y-4 md:flex-row md:space-y-0 md:space-x-6 xl:space-x-8">
+            <div className="flex w-full flex-col items-stretch justify-center space-y-4 md:flex-row md:space-x-6 md:space-y-0 xl:space-x-8">
               <div className="flex w-full flex-col space-y-6 bg-gray-50 px-4 py-6 md:p-6 xl:p-8   ">
                 <h3 className="text-xl font-semibold leading-5 text-gray-800">Summary</h3>
                 <div className="flex w-full flex-col items-center justify-center space-y-4 border-b border-gray-200 pb-4">
@@ -89,7 +124,10 @@ const OrderDetailAdmin = () => {
                 </div>
               </div>
               <div className="flex w-full flex-col justify-center space-y-6 bg-gray-50 px-4 py-6 md:p-6 xl:p-8   ">
-                <h3 className="text-xl font-semibold leading-5 text-gray-800">Vận chuyển</h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xl font-semibold leading-5 text-gray-800">Vận chuyển</h3>
+                  <h3 className="text-base leading-5 text-blue-500">{order?.status}</h3>
+                </div>
                 <div className="flex w-full items-start justify-between">
                   <div className="flex items-center justify-center space-x-4">
                     <div className="h-8 w-8">
@@ -111,9 +149,52 @@ const OrderDetailAdmin = () => {
                 </div>
                 <div className="flex w-full items-center justify-center">
                   {/* TODO: Sửa lại màu cho đơn hàng bị cancel */}
-                  <button className="w-96 bg-gray-800 py-5 text-base font-medium leading-4 text-white focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 hover:bg-black md:w-full">
-                    {order?.status}
-                  </button>
+                  {/* <button className="w-96 bg-gray-800 py-5 text-base font-medium leading-4 text-white focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 hover:bg-black md:w-full"> */}
+                  {/* {order?.status} */}
+                  {order?.status === "CONFIRM_PENDING" && (
+                    <UpdateInProcessStatus
+                      isOpen={isOpen}
+                      openModal={openModal}
+                      handleSubmit={handleSubmit}
+                      closeModal={closeModal}
+                      setNameShipper={setNameShipper}
+                      setPhoneShipper={setPhoneShipper}
+                      nameShipper={nameShipper}
+                      phoneShipper={phoneShipper}
+                      selected={selected}
+                      setSelected={setSelected}
+                      people={people}
+                    />
+                  )}
+                  {order?.status === "INPROCESS" && (
+                    <UpdateOtherStatus
+                      isOpen={isOpen}
+                      openModal={openModal}
+                      closeModal={closeModal}
+                      handleUpdateStatus={handleUpdateStatus}
+                      updateStatus="Đã giao"
+                    />
+                  )}
+                  {order?.status === "CANCEL_PENDING" && (
+                    <UpdateOtherStatus
+                      isOpen={isOpen}
+                      openModal={openModal}
+                      closeModal={closeModal}
+                      handleUpdateStatus={handleUpdateStatus}
+                      updateStatus="Đã hủy"
+                    />
+                  )}
+                  {order?.status === "RETURN_PENDING" && (
+                    <UpdateOtherStatus
+                      isOpen={isOpen}
+                      openModal={openModal}
+                      closeModal={closeModal}
+                      handleUpdateStatus={handleUpdateStatus}
+                      updateStatus="Đã đổi / trả"
+                    />
+                  )}
+
+                  {/* </button> */}
                 </div>
               </div>
             </div>
@@ -177,3 +258,269 @@ const OrderDetailAdmin = () => {
   );
 };
 export default OrderDetailAdmin;
+
+function SelectionList({
+  selected,
+  setSelected,
+  people,
+}: {
+  selected: any;
+  setSelected: any;
+  people: any;
+}) {
+  return (
+    <div className="w-full">
+      <Listbox value={selected} onChange={setSelected}>
+        <div className="relative mt-1">
+          <Listbox.Button className="relative w-full rounded-md border p-2 text-left focus:outline-none">
+            <span className="block truncate">{selected.name}</span>
+            <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+              <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+            </span>
+          </Listbox.Button>
+          <Transition
+            as={Fragment}
+            leave="transition ease-in duration-100"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0">
+            <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+              {people.map((person, personIdx) => (
+                <Listbox.Option
+                  key={personIdx}
+                  className={({ active }) =>
+                    `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                      active ? "bg-amber-100 text-amber-900" : "text-gray-900"
+                    }`
+                  }
+                  value={person}>
+                  {({ selected }) => (
+                    <>
+                      <span
+                        className={`block truncate ${selected ? "font-medium" : "font-normal"}`}>
+                        {person.name}
+                      </span>
+                      {selected ? (
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
+                          <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                        </span>
+                      ) : null}
+                    </>
+                  )}
+                </Listbox.Option>
+              ))}
+            </Listbox.Options>
+          </Transition>
+        </div>
+      </Listbox>
+    </div>
+  );
+}
+
+function UpdateInProcessStatus({
+  isOpen,
+  openModal,
+  handleSubmit,
+  closeModal,
+  setNameShipper,
+  setPhoneShipper,
+  nameShipper,
+  phoneShipper,
+  selected,
+  setSelected,
+  people,
+}: {
+  isOpen: boolean;
+  openModal: () => void;
+  closeModal: () => void;
+  handleSubmit: () => void;
+  setNameShipper: (e: any) => void;
+  setPhoneShipper: (e: any) => void;
+  nameShipper: string;
+  phoneShipper: string;
+  selected: any;
+  setSelected: any;
+  people: any;
+}) {
+  return (
+    <div className=" w-full">
+      <div className="flex w-full items-center justify-center">
+        <button
+          type="button"
+          onClick={openModal}
+          className=" bg-gray-600 py-5 text-base font-medium uppercase leading-4 text-white focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 hover:bg-gray-700 md:w-full">
+          Cập nhật
+        </button>
+      </div>
+
+      <Transition appear show={isOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={closeModal}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0">
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95">
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white px-10 py-6 text-left align-middle shadow-xl transition-all">
+                  <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                    Trạng thái: Đang giao
+                  </Dialog.Title>
+                  <div className="mt-5">
+                    <div className="flex flex-col gap-2">
+                      <label
+                        htmlFor="info_delivery"
+                        className="text-base font-semibold text-gray-700">
+                        Đơn vị vận chuyển
+                      </label>
+                      {/* <input
+                        type="text"
+                        id="info_delivery"
+                        className="w-full rounded-md border border-gray-300 p-2 outline-none"
+                      /> */}
+                      <SelectionList
+                        selected={selected}
+                        setSelected={setSelected}
+                        people={people}
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <h1 className="mt-5 font-semibold text-gray-700">Thông tin shipper</h1>
+                      <label htmlFor="name_shipper">Họ tên</label>
+                      <input
+                        type="text"
+                        id="name_shipper"
+                        onChange={(e) => {
+                          setNameShipper(e.target.value);
+                        }}
+                        value={nameShipper}
+                        className="w-full rounded-md border border-gray-300 p-2 outline-none"
+                      />
+                    </div>
+                    <div className="mt-5 flex flex-col gap-2">
+                      <label htmlFor="phone_shipper">Số điện thoại</label>
+                      <input
+                        type="tel"
+                        id="phone_shipper"
+                        onChange={(e) => {
+                          setPhoneShipper(e.target.value);
+                        }}
+                        value={phoneShipper}
+                        className="w-full rounded-md border border-gray-300 p-2 outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-5 flex justify-between">
+                    <button
+                      type="button"
+                      className="inline-flex h-10 w-24 items-center justify-center rounded-md border border-transparent bg-blue-100 text-sm font-medium text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 hover:bg-blue-200"
+                      onClick={handleSubmit}>
+                      Cập nhật
+                    </button>
+                    <button
+                      type="button"
+                      className="inline-flex h-10 w-24 items-center justify-center rounded-md border border-transparent bg-red-200 text-sm font-medium text-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 hover:bg-red-300"
+                      onClick={closeModal}>
+                      Hủy
+                    </button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+    </div>
+  );
+}
+
+function UpdateOtherStatus({
+  isOpen,
+  openModal,
+  closeModal,
+  handleUpdateStatus,
+  updateStatus,
+}: {
+  isOpen: boolean;
+  openModal: () => void;
+  closeModal: () => void;
+  handleUpdateStatus: () => void;
+  updateStatus: string;
+}) {
+  return (
+    <div className=" w-full">
+      <div className="flex w-full items-center justify-center">
+        <button
+          type="button"
+          onClick={openModal}
+          className=" bg-gray-600 py-5 text-base font-medium uppercase leading-4 text-white focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 hover:bg-gray-700 md:w-full">
+          Cập nhật
+        </button>
+      </div>
+
+      <Transition appear show={isOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={closeModal}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0">
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-2 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95">
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                    {`Bạn muốn cập nhật trạng thái thành ${updateStatus}?`}
+                  </Dialog.Title>
+                  <div className="mt-5"></div>
+
+                  <div className="mt-10 flex justify-between">
+                    <button
+                      type="button"
+                      className="inline-flex h-10 w-24 items-center justify-center rounded-md border border-transparent bg-blue-100 text-sm font-medium text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 hover:bg-blue-200"
+                      onClick={handleUpdateStatus}>
+                      Cập nhật
+                    </button>
+                    <button
+                      type="button"
+                      className="inline-flex h-10 w-24 items-center justify-center rounded-md border border-transparent bg-red-200 text-sm font-medium text-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 hover:bg-red-300"
+                      onClick={closeModal}>
+                      Hủy
+                    </button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+    </div>
+  );
+}

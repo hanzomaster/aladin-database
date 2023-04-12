@@ -10,5 +10,6 @@
     "web",
     "deps",
     "database"
-  ]
+  ],
+  "dotenv.enableAutocloaking": false
 }
