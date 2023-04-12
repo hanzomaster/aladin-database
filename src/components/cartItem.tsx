@@ -11,7 +11,10 @@ const CartItem = ({ product }: any) => {
   const [count, setCount] = useState(product?.numberOfItems);
   const utils = trpc.useContext();
   const { add: toast } = useToast();
-
+  const { data: stockData } = trpc.productInStock.getOneWhere.useQuery({
+    productDetailId: product?.productDetail.id,
+    size: product?.size as ClothSizeLiteral,
+  });
   const createMutation = trpc.cartItem.updateOrCreate.useMutation({
     onSuccess() {
       utils.cart.get.invalidate();
@@ -98,6 +101,8 @@ const CartItem = ({ product }: any) => {
                 onChange={handleChange}
               />
             </div>
+            SLLLL:
+            {stockData?.quantity}
           </div>
 
           <div className="flex">

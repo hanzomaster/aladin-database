@@ -15,9 +15,11 @@ const userFunc = ["Quản lý tài khoản", "Quản lý đơn hàng", "Đăng x
 const menuData = ["Sign in"];
 
 const NavBar = () => {
-  const { cart } = useCart();
-  const { data: cartData } = trpc.cart.get.useQuery();
   const { data: sessionData } = useSession();
+  const { cart } = useCart();
+  const { data: cartData } = trpc.cart.get.useQuery(undefined, {
+    enabled: sessionData?.user !== undefined,
+  });
 
   const { data: productLineData } = trpc.productLine.getAll.useQuery();
   const maleData = productLineData
