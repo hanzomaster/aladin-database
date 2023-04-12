@@ -132,20 +132,18 @@ export default function DropdownComponent({
             {(type === "male" || type === "female") &&
               data?.map((content) => {
                 return (
-                  <>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <a
-                          href={"/home?name=" + content + "&gender=" + type}
-                          className={classNames(
-                            active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                            "block px-4 py-2 text-sm"
-                          )}>
-                          {content}
-                        </a>
-                      )}
-                    </Menu.Item>
-                  </>
+                  <Menu.Item key={content}>
+                    {({ active }) => (
+                      <a
+                        href={"/home?name=" + content + "&gender=" + type}
+                        className={classNames(
+                          active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                          "block px-4 py-2 text-sm"
+                        )}>
+                        {content}
+                      </a>
+                    )}
+                  </Menu.Item>
                 );
               })}
             {type === "menu" &&

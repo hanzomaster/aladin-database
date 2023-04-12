@@ -1,4 +1,5 @@
 import { inferRouterOutputs } from "@trpc/server";
+import { useSession } from "next-auth/react";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { AppRouter } from "../server/trpc/router/_app";
 import { trpc } from "../utils/trpc";
@@ -18,7 +19,10 @@ export const CartContext = createContext<CartContextType>({
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const { data, status } = trpc.cart.get.useQuery();
+  const { data: sessionData } = useSession();
+  const { data, status } = trpc.cart.get.useQuery(undefined, {
+    enabled: sessionData?.user !== undefined,
+  });
   const [cart, setCart] = useState<{
     data: inferRouterOutputs<AppRouter>["cart"]["get"] | undefined;
     loading: boolean;

@@ -138,15 +138,13 @@ const Footer = () => {
               </h6>
               {products.map((product) => {
                 return (
-                  <>
-                    <Link legacyBehavior href={"/home?name=" + product.name}>
-                      <p className="mb-4">
-                        <a href={"/home?name=" + product.name} className="text-gray-600">
-                          {product.name}
-                        </a>
-                      </p>
-                    </Link>
-                  </>
+                  <Link key={product.name} legacyBehavior href={"/home?name=" + product.name}>
+                    <p className="mb-4">
+                      <a href={"/home?name=" + product.name} className="text-gray-600">
+                        {product.name}
+                      </a>
+                    </p>
+                  </Link>
                 );
               })}
             </div>

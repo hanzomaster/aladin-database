@@ -3,8 +3,8 @@ import type { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import type { AppType } from "next/app";
 import Head from "next/head";
-import Footer from "../components/footer";
 import { ToastProvider } from "../components/Toast";
+import Footer from "../components/footer";
 import { CartProvider } from "../context/CartContext";
 
 import "../styles/globals.css";
@@ -17,8 +17,8 @@ const MyApp: AppType<{ session: Session | null }> = ({
   pageProps: { session, ...pageProps },
 }) => {
   return (
-    <CartProvider>
-      <SessionProvider session={session}>
+    <SessionProvider session={session}>
+      <CartProvider>
         <ToastProvider>
           <Head>
             <title>Aladin</title>
@@ -28,8 +28,8 @@ const MyApp: AppType<{ session: Session | null }> = ({
           <Component {...pageProps} />
           <Footer />
         </ToastProvider>
-      </SessionProvider>
-    </CartProvider>
+      </CartProvider>
+    </SessionProvider>
   );
 };
 
