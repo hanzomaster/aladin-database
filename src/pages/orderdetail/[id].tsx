@@ -2,8 +2,8 @@ import { Dialog, Transition } from "@headlessui/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { Fragment, useState } from "react";
-import Navbar from "../../components/navbar";
 import { useToast } from "../../components/Toast";
+import Navbar from "../../components/navbar";
 import OrderedItem from "../../components/user/OrderedItem";
 
 import { trpc } from "../../utils/trpc";
@@ -184,16 +184,16 @@ const OrderDetail = () => {
                       Ghi chú:
                     </p>
                     <p className=" w-56 text-center text-sm leading-5 text-gray-600 md:text-left lg:w-full xl:w-56">
-                      {order?.comments}
+                      {order?.note}
                     </p>
                   </div>
                 </div>
                 <div className="flex w-full items-center justify-center md:items-start md:justify-start">
                   <button
                     className="mt-2 w-96 border border-gray-800 py-3 text-base font-medium leading-4 text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 hover:bg-gray-200 md:mt-0 2xl:w-full"
-                    disabled={order?.status === "CANCELLED"}
+                    disabled={order?.status === "CANCEL"}
                     onClick={openModal}>
-                    {order?.status === "CANCELLED" ? "Đã hủy" : "Hủy/ Đổi trả đơn hàng"}
+                    {order?.status === "CANCEL" ? "Đã hủy" : "Hủy/ Đổi trả đơn hàng"}
                   </button>
                 </div>
               </div>

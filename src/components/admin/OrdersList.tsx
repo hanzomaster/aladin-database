@@ -87,21 +87,21 @@ const OrdersList = ({
                 {/* order status */}
                 {order.status === OrderStatus.INPROCESS && (
                   <td className="whitespace-nowrap px-2 py-3 md:px-6">
-                    <span className="rounded-full bg-yellow-100 px-3 pt-1 pb-2 text-base font-medium text-yellow-700 ">
+                    <span className="rounded-full bg-yellow-100 px-3 pb-2 pt-1 text-base font-medium text-yellow-700 ">
                       Đang giao
                     </span>
                   </td>
                 )}
-                {order.status === OrderStatus.CANCELLED && (
+                {order.status === OrderStatus.CANCEL && (
                   <td className="whitespace-nowrap px-2 py-3 md:px-6">
-                    <span className="rounded-full bg-red-100 px-3 pt-1 pb-2 text-base font-medium text-red-700 ">
+                    <span className="rounded-full bg-red-100 px-3 pb-2 pt-1 text-base font-medium text-red-700 ">
                       Đã hủy
                     </span>
                   </td>
                 )}
                 {order.status === OrderStatus.SHIPPED && (
                   <td className="whitespace-nowrap px-2 py-3 md:px-6 ">
-                    <span className="rounded-full bg-green-100 px-3 pt-1 pb-2 text-base font-medium text-green-700 ">
+                    <span className="rounded-full bg-green-100 px-3 pb-2 pt-1 text-base font-medium text-green-700 ">
                       Đã giao
                     </span>
                   </td>

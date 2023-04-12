@@ -3,16 +3,27 @@ import { debounce } from "lodash";
 import Image from "next/image";
 import { useState } from "react";
 import { trpc } from "../utils/trpc";
+import { useToast } from "./Toast";
 
 type ClothSizeLiteral = `${ClothSize}`;
 
 const CartItem = ({ product }: any) => {
   const [count, setCount] = useState(product?.numberOfItems);
   const utils = trpc.useContext();
+  const { add: toast } = useToast();
 
   const createMutation = trpc.cartItem.updateOrCreate.useMutation({
     onSuccess() {
       utils.cart.get.invalidate();
+    },
+    onError() {
+      toast({
+        type: "error",
+        duration: 1500,
+        message: "Số lượng đặt hàng vượt quá số sản phẩm trong kho",
+        position: "topRight",
+      });
+      setCount(product?.numberOfItems);
     },
   });
   const mutation = trpc.cartItem.delete.useMutation({

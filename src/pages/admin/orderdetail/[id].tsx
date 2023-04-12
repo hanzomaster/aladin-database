@@ -238,7 +238,7 @@ const OrderDetailAdmin = () => {
                       Ghi chú:
                     </p>
                     <p className=" w-56 text-center text-sm leading-5 text-gray-600 md:text-left lg:w-full xl:w-56">
-                      {order?.comments}
+                      {order?.note}
                     </p>
                   </div>
                 </div>
