@@ -8,6 +8,7 @@ import { useState } from "react";
 
 import { trpc } from "../utils/trpc";
 import { useToast } from "./Toast";
+import ChooseSize from "./chooseSizeDialog";
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
@@ -71,17 +72,12 @@ export default function ItemCard({ item }: { item: any }) {
               alt="Image"
               priority={true}></Image>
           </div>
-          <div className="absolute -bottom-10 flex h-full w-full items-center justify-center bg-black/20 opacity-0 transition-all duration-300 group-hover:bottom-0 group-hover:opacity-100">
-            <button
-              className="rounded-lg bg-gray-100 py-2 px-5 text-gray-900 hover:bg-slate-500 hover:text-white"
-              onClick={() =>
-                handleAddItemToCart(selectedId ? selectedId : item.productDetail[0]?.id)
-              }>
-              Thêm vào giỏ hàng
-            </button>
-          </div>
+          <ChooseSize
+            productDetailId={selectedId ? selectedId : item.productDetail[0]?.id}
+            productName={item.name}
+          />
         </div>
-        <h2 className="mr-18 mt-3 ml-2 truncate text-xl text-2xl capitalize hover:text-red-500">
+        <h2 className="mr-18 ml-2 mt-3 truncate text-2xl text-xl capitalize hover:text-red-500">
           <a href={"/productDetail/" + item.code}>
             {item.name} &#40;{item.line.gender}&#41;
           </a>
@@ -135,13 +131,13 @@ export default function ItemCard({ item }: { item: any }) {
               currency: "VND",
             })}
           </del>
-          <small className="mr-3 ml-2  rounded-full bg-red-700 px-2 tracking-widest text-white">
+          <small className="ml-2 mr-3  rounded-full bg-red-700 px-2 tracking-widest text-white">
             -40&#37;
           </small>
         </div>
 
         <br />
-        <span className="mt-2 ml-1 inline-block text-xl">
+        <span className="ml-1 mt-2 inline-block text-xl">
           {(item.buyPrice * 600).toLocaleString("vi-VN", {
             style: "currency",
             currency: "VND",

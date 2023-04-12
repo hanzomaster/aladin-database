@@ -70,6 +70,7 @@ export const productRouter = router({
           include: {
             productInStock: {
               select: {
+                productDetailId: true,
                 size: true,
                 quantity: true,
               },
