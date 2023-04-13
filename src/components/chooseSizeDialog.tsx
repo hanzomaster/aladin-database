@@ -87,7 +87,7 @@ const ChooseSize = ({
                 leave="ease-in duration-200"
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95">
-                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Panel className="w-full max-w-md transform items-center overflow-hidden rounded-2xl bg-white p-6 text-center align-middle shadow-xl transition-all">
                   <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
                     Chọn size sản phẩm {productName}
                   </Dialog.Title>
@@ -95,58 +95,60 @@ const ChooseSize = ({
                   <RadioGroup
                     value={selectedSize}
                     // onChange={setSelectedSize}
-                    className="mt-4">
+                    className="inset-x-0 mt-4 items-center justify-center">
                     <RadioGroup.Label className="sr-only">Choose a size</RadioGroup.Label>
-                    <div className="grid w-3/4 grid-cols-5 gap-4">
+                    <div className="grid w-full grid-cols-4 items-center gap-4">
                       {stockData?.map((productInStock) => (
-                        <RadioGroup.Option
-                          key={productInStock.size}
-                          value={productInStock.size}
-                          disabled={productInStock.quantity <= 0}
-                          onClick={() => setSelectedSize(productInStock.size)}
-                          className={({ active }) =>
-                            classNames(
-                              productInStock.quantity > 0
-                                ? "cursor-pointer bg-white text-gray-900 shadow-sm"
-                                : "cursor-not-allowed bg-gray-50 text-gray-200",
-                              active ? "ring-2 ring-indigo-500" : "",
-                              "relative flex items-center justify-center rounded-md border px-4 py-3 text-sm font-medium uppercase focus:outline-none hover:bg-gray-50 sm:flex-1"
-                            )
-                          }>
-                          {({ active, checked }) => (
-                            <>
-                              <RadioGroup.Label as="span">{productInStock.size}</RadioGroup.Label>
-                              {productInStock.quantity > 0 ? (
-                                <span
-                                  className={classNames(
-                                    active ? "border" : "border-2",
-                                    checked ? "border-indigo-500" : "border-transparent",
-                                    "pointer-events-none absolute -inset-px rounded-md border-2 border-gray-300"
-                                  )}
-                                  aria-hidden="true"
-                                />
-                              ) : (
-                                <span
-                                  aria-hidden="true"
-                                  className="pointer-events-none absolute -inset-px rounded-md border-2 border-gray-200">
-                                  <svg
-                                    className="absolute inset-0 h-full w-full stroke-2 text-gray-200"
-                                    viewBox="0 0 100 100"
-                                    preserveAspectRatio="none"
-                                    stroke="currentColor">
-                                    <line
-                                      x1={0}
-                                      y1={100}
-                                      x2={100}
-                                      y2={0}
-                                      vectorEffect="non-scaling-stroke"
-                                    />
-                                  </svg>
-                                </span>
-                              )}
-                            </>
-                          )}
-                        </RadioGroup.Option>
+                        <div key={productInStock.size} className="flex flex-col">
+                          <RadioGroup.Option
+                            value={productInStock.size}
+                            disabled={productInStock.quantity <= 0}
+                            onClick={() => setSelectedSize(productInStock.size)}
+                            className={({ active }) =>
+                              classNames(
+                                productInStock.quantity > 0
+                                  ? "cursor-pointer bg-white text-gray-900 shadow-sm"
+                                  : "cursor-not-allowed bg-gray-50 text-gray-200",
+                                active ? "ring-2 ring-indigo-500" : "",
+                                "relative flex items-center justify-center rounded-md border px-4 py-3 text-sm font-medium uppercase focus:outline-none hover:bg-gray-50 sm:flex-1"
+                              )
+                            }>
+                            {({ active, checked }) => (
+                              <>
+                                <RadioGroup.Label as="span">{productInStock.size}</RadioGroup.Label>
+                                {productInStock.quantity > 0 ? (
+                                  <span
+                                    className={classNames(
+                                      active ? "border" : "border-2",
+                                      checked ? "border-indigo-500" : "border-transparent",
+                                      "pointer-events-none absolute -inset-px rounded-md border-2 border-gray-300"
+                                    )}
+                                    aria-hidden="true"
+                                  />
+                                ) : (
+                                  <span
+                                    aria-hidden="true"
+                                    className="pointer-events-none absolute -inset-px rounded-md border-2 border-gray-200">
+                                    <svg
+                                      className="absolute inset-0 h-full w-full stroke-2 text-gray-200"
+                                      viewBox="0 0 100 100"
+                                      preserveAspectRatio="none"
+                                      stroke="currentColor">
+                                      <line
+                                        x1={0}
+                                        y1={100}
+                                        x2={100}
+                                        y2={0}
+                                        vectorEffect="non-scaling-stroke"
+                                      />
+                                    </svg>
+                                  </span>
+                                )}
+                              </>
+                            )}
+                          </RadioGroup.Option>
+                          <div>{productInStock.quantity}</div>
+                        </div>
                       ))}
                     </div>
                   </RadioGroup>
@@ -158,11 +160,11 @@ const ChooseSize = ({
                       onClick={() => {
                         handleAddItemToCart(productDetailId);
                       }}>
-                      Xác nhận đặt hàng
+                      Thêm vào giỏ hàng
                     </button>
                     <button
                       type="button"
-                      className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 hover:bg-blue-200"
+                      className="inline-flex justify-center rounded-md border border-transparent bg-red-100 px-4 py-2 text-sm font-medium text-red-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 hover:bg-red-200"
                       onClick={() => {
                         setIsOpen(false);
                       }}>
