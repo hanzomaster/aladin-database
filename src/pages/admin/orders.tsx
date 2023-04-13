@@ -1,15 +1,15 @@
+import { Listbox, Transition } from "@headlessui/react";
+import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { inferRouterOutputs } from "@trpc/server";
 import { NextPage } from "next";
-import { use, useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
+import Pagination, { postsPerPage } from "../../components/Pagination";
 import NavbarAdmin from "../../components/admin/NavbarAdmin";
 import OrdersList from "../../components/admin/OrdersList";
 import Searchbar from "../../components/admin/Searchbar";
-import Pagination, { postsPerPage } from "../../components/Pagination";
-import { Fragment } from "react";
-import { Listbox, Transition } from "@headlessui/react";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { AppRouter } from "../../server/trpc/router/_app";
 import { trpc } from "../../utils/trpc";
+import { STATIC_STATUS_PAGES } from "next/dist/shared/lib/constants";
 
 const Orders: NextPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -22,6 +22,7 @@ const Orders: NextPage = () => {
   };
 
   const statusList = [
+    "Tất cả đơn hàng",
     "Chờ xác nhận",
     "Đang giao",
     "Đã giao",
@@ -32,16 +33,13 @@ const Orders: NextPage = () => {
     "Hoàn thành",
   ];
 
-  const [filter, setFilter] = useState("Trạng thái đơn hàng");
+  const [filter, setFilter] = useState("Tất cả đơn hàng");
 
-  const [isFiltering, setIsFiltering] = useState(true);
+  const [isFiltering, setIsFiltering] = useState(false);
 
-  const handleSetFilter = (e) => {
-    if (!isFiltering) {
-      setFilter("Trạng thái đơn hàng");
-    } else {
-      setFilter(e);
-    }
+  const handleSetFilter = (e: any) => {
+    setFilter(e);
+    handleFilter(e);
   };
   const { data } = trpc.order.getAll.useQuery();
   const [searchResult, setSearchResult] = useState<
@@ -59,51 +57,55 @@ const Orders: NextPage = () => {
     inferRouterOutputs<AppRouter>["order"]["getAll"] | undefined
   >(data);
 
-  const handleFilter = () => {
-    switch (filter) {
+  const handleFilter = (e: any) => {
+    setIsFiltering(true);
+    switch (e) {
       case "Chờ xác nhận": {
-        const result = data.filter((order) => order.status === "CONFIRM_PENDING");
+        const result = data?.filter((order) => order.status === "CONFIRM_PENDING");
         setFilterResult(result);
         break;
       }
 
       case "Đang giao": {
-        const result = data.filter((order) => order.status === "INPROCESS");
+        const result = data?.filter((order) => order.status === "INPROCESS");
         setFilterResult(result);
         break;
       }
 
       case "Đã giao": {
-        const result = data.filter((order) => order.status === "SHIPPED");
+        const result = data?.filter((order) => order.status === "SHIPPED");
         setFilterResult(result);
         break;
       }
       case "Chờ hủy": {
-        const result = data.filter((order) => order.status === "CANCEL_PENDING");
+        const result = data?.filter((order) => order.status === "CANCEL_PENDING");
         setFilterResult(result);
         break;
       }
       case "Đã hủy": {
-        const result = data.filter((order) => order.status === "CANCEL");
+        const result = data?.filter((order) => order.status === "CANCEL");
         setFilterResult(result);
         break;
       }
       case "Chờ đổi/trả": {
-        const result = data.filter((order) => order.status === "RETURN_PENDING");
+        const result = data?.filter((order) => order.status === "RETURN_PENDING");
         setFilterResult(result);
         break;
       }
       case "Đã đổi/trả": {
-        const result = data.filter((order) => order.status === "RETURN");
+        const result = data?.filter((order) => order.status === "RETURN");
         setFilterResult(result);
         break;
       }
       case "Hoàn thành": {
-        const result = data.filter((order) => order.status === "COMPLETED");
+        const result = data?.filter((order) => order.status === "COMPLETED");
         setFilterResult(result);
         break;
       }
       default:
+        setIsFiltering(false);
+        const result = [...data];
+        setFilterResult(result);
         break;
     }
   };
@@ -126,9 +128,6 @@ const Orders: NextPage = () => {
           // setFilter={setFilter}
           handleSetFilter={handleSetFilter}
           statusList={statusList}
-          isFiltering={isFiltering}
-          setIsFiltering={setIsFiltering}
-          handleFilter={handleFilter}
         />
         {searchResult?.length !== data?.length && (
           <h2 className="mt-4 text-xl font-medium text-gray-900">
@@ -149,21 +148,13 @@ const Orders: NextPage = () => {
 };
 export default Orders;
 
-function Filter({
-  filter,
-  handleSetFilter,
-  statusList,
-  isFiltering,
-  setIsFiltering,
-  handleFilter,
-}) {
+function Filter({ filter, handleSetFilter, statusList }: any) {
   return (
     <div className="flex gap-5">
       <div className="w-72">
         <Listbox
           value={filter}
           onChange={(e) => {
-            setIsFiltering(true);
             handleSetFilter(e);
           }}>
           <div className="relative mt-1">
@@ -181,7 +172,7 @@ function Filter({
               <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                 {statusList.map((status) => (
                   <Listbox.Option
-                    key={status}
+                    key={STATIC_STATUS_PAGES}
                     className={({ active }) =>
                       `relative cursor-default select-none py-2 pl-10 pr-4 ${
                         active ? "bg-amber-100 text-amber-900" : "text-gray-900"
@@ -208,14 +199,6 @@ function Filter({
           </div>
         </Listbox>
       </div>
-      <button
-        className=" rounded-md bg-slate-200 px-3 text-gray-500 hover:bg-slate-300 "
-        onClick={() => {
-          setIsFiltering(!isFiltering);
-          handleFilter();
-        }}>
-        {isFiltering ? "Lọc" : "Bỏ lọc"}
-      </button>
     </div>
   );
 }

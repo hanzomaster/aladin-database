@@ -68,14 +68,8 @@ export const productRouter = router({
         },
         productDetail: {
           include: {
-            productInStock: {
-              select: {
-                productDetailId: true,
-                size: true,
-                quantity: true,
-              },
-            },
-          },
+            productInStock: true
+          }
         },
       },
     })
