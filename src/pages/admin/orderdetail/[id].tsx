@@ -295,7 +295,7 @@ function SelectionList({
             <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
               {deliveryBrands.map((brand) => (
                 <Listbox.Option
-                  key={brand}
+                  key={brand.name}
                   className={({ active }) =>
                     `relative cursor-default select-none py-2 pl-10 pr-4 ${
                       active ? "bg-amber-100 text-amber-900" : "text-gray-900"
@@ -306,7 +306,7 @@ function SelectionList({
                     <>
                       <span
                         className={`block truncate ${selected ? "font-medium" : "font-normal"}`}>
-                        {brand}
+                        {brand.name}
                       </span>
                       {selected ? (
                         <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
