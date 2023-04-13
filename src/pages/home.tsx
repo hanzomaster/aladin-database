@@ -35,7 +35,7 @@ const Products = () => {
         <section>
           <NavBar />
         </section>
-        <section className=" p- mx-1 grid gap-5 py-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:px-20">
+        <section className="mx-1 grid gap-5 py-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:px-20">
           <div className="col-span-6 block">
             <p className=" mt-10 text-xl font-bold sm:text-3xl">Kết quả cho: {name}</p>
           </div>

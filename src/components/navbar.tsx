@@ -73,7 +73,7 @@ const NavBar = () => {
                   leaveTo="translate-x-full">
                   <div className="pointer-events-auto w-screen max-w-md">
                     <div className="flex h-full flex-col bg-white shadow-xl">
-                      <div className=" h-2/3 flex-1 py-6 px-4 sm:px-6">
+                      <div className=" h-2/3 flex-1 px-4 py-6 sm:px-6">
                         <div className="flex items-start justify-between">
                           <Dialog.Title className="text-lg font-medium text-gray-900">
                             Giỏ hàng
@@ -119,7 +119,7 @@ const NavBar = () => {
                         </div>
                       </div>
 
-                      <div className="border-t border-gray-200 py-6 px-4 sm:px-6">
+                      <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
                         <div className="flex justify-between text-base font-medium text-gray-900">
                           <p>Tổng giá tiền</p>
                           <p>
@@ -148,7 +148,8 @@ const NavBar = () => {
                               onClick={() => {
                                 setOpen(false);
                               }}>
-                              Tiếp tục mua sắm
+                              <Link href="/home"> Tiếp tục mua sắm</Link>
+
                               <span aria-hidden="true"> &rarr;</span>
                             </button>
                           </p>
@@ -167,7 +168,7 @@ const NavBar = () => {
       <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />
       <header className="sticky z-[10]">
         <nav className="fixed mt-0 flex w-full flex-wrap items-center justify-between border-t-2  border-solid border-gray-700 bg-[#eff6ff] py-4 shadow lg:px-12">
-          <div className=" relative flex w-full justify-between border-b-2 border-solid border-gray-300 pl-6 pr-2 pb-5 lg:w-auto lg:border-b-0 lg:pb-0">
+          <div className=" relative flex w-full justify-between border-b-2 border-solid border-gray-300 pb-5 pl-6 pr-2 lg:w-auto lg:border-b-0 lg:pb-0">
             <Link href="/home" className="mr-20 flex flex-shrink-0 items-center pr-6 text-gray-800">
               <div className="relative h-10 w-28 cursor-pointer object-fill">
                 <Image
@@ -203,7 +204,7 @@ const NavBar = () => {
                 onChange={handleChange}
                 onKeyDown={getKeyDown}
               />
-              <button type="submit" className="absolute right-0 top-0 mt-3 mr-2">
+              <button type="submit" className="absolute right-0 top-0 mr-2 mt-3">
                 <Link href={"/home?name=" + message}>
                   <svg
                     className="h-4 w-4 fill-current text-gray-600"
@@ -234,7 +235,7 @@ const NavBar = () => {
                 onClick={() => setOpen(true)}>
                 <i className="fas fa-shopping-cart"></i>
 
-                <span className=" absolute top-0 left-0 rounded-full bg-indigo-500 p-1 text-xs text-white "></span>
+                <span className=" absolute left-0 top-0 rounded-full bg-indigo-500 p-1 text-xs text-white "></span>
               </button>
             </div>
           </div>

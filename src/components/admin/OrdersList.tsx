@@ -106,6 +106,41 @@ const OrdersList = ({
                     </span>
                   </td>
                 )}
+                {order.status === OrderStatus.CONFIRM_PENDING && (
+                  <td className="whitespace-nowrap px-2 py-3 md:px-6 ">
+                    <span className="rounded-full bg-blue-100 px-3 pb-2 pt-1 text-base font-medium text-blue-700 ">
+                      Chờ xác nhận
+                    </span>
+                  </td>
+                )}
+                {order.status === OrderStatus.CANCEL_PENDING && (
+                  <td className="whitespace-nowrap px-2 py-3 md:px-6 ">
+                    <span className="rounded-full bg-orange-100 px-3 pb-2 pt-1 text-base font-medium text-orange-700 ">
+                      Chờ huỷ
+                    </span>
+                  </td>
+                )}
+                {order.status === OrderStatus.RETURN && (
+                  <td className="whitespace-nowrap px-2 py-3 md:px-6 ">
+                    <span className="rounded-full bg-emerald-200 px-3 pb-2 pt-1 text-base font-medium text-emerald-700 ">
+                      Đã đổi/trả
+                    </span>
+                  </td>
+                )}
+                {order.status === OrderStatus.RETURN_PENDING && (
+                  <td className="whitespace-nowrap px-2 py-3 md:px-6 ">
+                    <span className="rounded-full bg-cyan-100 px-3 pb-2 pt-1 text-base font-medium text-cyan-700 ">
+                      Chờ đổi/trả
+                    </span>
+                  </td>
+                )}
+                {order.status === OrderStatus.COMPLETED && (
+                  <td className="whitespace-nowrap px-2 py-3 md:px-6 ">
+                    <span className="rounded-full bg-pink-100 px-3 pb-2 pt-1 text-base font-medium text-pink-700 ">
+                      Hoàn thành
+                    </span>
+                  </td>
+                )}
               </tr>
             );
           })}

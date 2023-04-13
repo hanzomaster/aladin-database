@@ -32,6 +32,11 @@ const OrderDetail = () => {
     });
   };
 
+  const handleReturnOrder = () => {
+    mutation.mutate({
+      orderNumber: id as string,
+    });
+  };
   const { data: order } = trpc.order.getOneWhere.useQuery({ orderNumber: id as string });
 
   const [isOpen, setIsOpen] = useState(false);
@@ -117,7 +122,18 @@ const OrderDetail = () => {
                 </div>
               </div>
               <div className="flex w-full flex-col justify-center space-y-6 bg-gray-50 px-4 py-6 md:p-6 xl:p-8   ">
-                <h3 className="text-xl font-semibold leading-5 text-gray-800">Vận chuyển</h3>
+                <div className="flex justify-between">
+                  <h3 className="text-xl font-semibold leading-5 text-gray-800">Vận chuyển</h3>
+                  {order?.status === "SHIPPED" && <p>Đã giao</p>}
+                  {order?.status === "CONFIRM_PENDING" && <p>Đang chờ xác nhận</p>}
+                  {order?.status === "INPROCESS" && <p>Đang giao</p>}
+                  {order?.status === "CANCEL" && <p>Đã hủy</p>}
+                  {order?.status === "CANCEL_PENDING" && <p>Đang chờ hủy</p>}
+                  {order?.status === "INPROCESS" && <p> Đang giao</p>}
+                  {order?.status === "RETURN_PENDING" && <p> Đang chờ đổi/ trả</p>}
+                  {order?.status === "RETURN" && <p>Đã đổi/trả</p>}
+                  {order?.status === "COMPLETED" && <p>Hoàn thành</p>}
+                </div>
                 <div className="flex w-full items-start justify-between">
                   <div className="flex items-center justify-center space-x-4">
                     <div className="h-8 w-8">
@@ -137,12 +153,14 @@ const OrderDetail = () => {
                   </div>
                   <p className="text-lg font-semibold leading-6 text-gray-800">0 &#8363;</p>
                 </div>
-                <div className="flex w-full items-center justify-center">
-                  {/* TODO: Sửa lại màu cho đơn hàng bị cancel */}
-                  <button className="w-96 bg-gray-800 py-5 text-base font-medium leading-4 text-white focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 hover:bg-black md:w-full">
-                    {order?.status}
-                  </button>
-                </div>
+                {order?.status === "INPROCESS" && (
+                  <div className="flex w-full items-center justify-center">
+                    {/* TODO: Sửa lại màu cho đơn hàng bị cancel */}
+                    <button className="w-96 bg-gray-600 py-5 text-base font-medium leading-4 text-white focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 hover:bg-gray-800 md:w-full">
+                      Đã nhận đươc hàng
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -188,14 +206,26 @@ const OrderDetail = () => {
                     </p>
                   </div>
                 </div>
-                <div className="flex w-full items-center justify-center md:items-start md:justify-start">
-                  <button
-                    className="mt-2 w-96 border border-gray-800 py-3 text-base font-medium leading-4 text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 hover:bg-gray-200 md:mt-0 2xl:w-full"
-                    disabled={order?.status === "CANCEL"}
-                    onClick={openModal}>
-                    {order?.status === "CANCEL" ? "Đã hủy" : "Hủy/ Đổi trả đơn hàng"}
-                  </button>
-                </div>
+                {order?.status === "CONFIRM_PENDING" && (
+                  <div className="flex w-full items-center justify-center md:items-start md:justify-start">
+                    <button
+                      className="mt-2 w-96 border border-gray-800 py-3 text-base font-medium leading-4 text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 hover:bg-gray-200 md:mt-0 2xl:w-full"
+                      // disabled={order?.status === "CANCEL"}
+                      onClick={openModal}>
+                      Hủy đơn hàng
+                    </button>
+                  </div>
+                )}
+                {order?.status === "COMPLETED" && (
+                  <div className="flex w-full items-center justify-center md:items-start md:justify-start">
+                    <button
+                      className="mt-2 w-96 border border-gray-800 py-3 text-base font-medium leading-4 text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 hover:bg-gray-200 md:mt-0 2xl:w-full"
+                      // disabled={order?.status === "CANCEL"}
+                      onClick={openModal}>
+                      Đổi/ trả hàng
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -227,10 +257,14 @@ const OrderDetail = () => {
                         <Dialog.Title
                           as="h3"
                           className="text-lg font-medium leading-6 text-gray-900">
-                          Bạn có chắc chắn muốn hủy đơn hàng
+                          {`Bạn có chắc chắn muốn ${
+                            order?.status === "CONFIRM_PENDING" ? "huỷ" : "đổi/ trả"
+                          } đơn hàng`}
                         </Dialog.Title>
 
-                        <label className="mt-3">Lý do hủy đơn:</label>
+                        <label className="mt-3">{`Lý do ${
+                          order?.status === "CONFIRM_PENDING" ? "huỷ" : "đổi/ trả"
+                        } hàng:`}</label>
                         <textarea
                           className="mt-3 w-full rounded border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-blue-600 md:text-base"
                           onChange={(e) => setComment(e.target.value)}
@@ -240,8 +274,8 @@ const OrderDetail = () => {
                           <button
                             type="button"
                             className="inline-flex justify-center rounded-md border border-transparent bg-red-100 px-4 py-2 text-sm font-medium text-red-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 hover:bg-red-200"
-                            onClick={handleCancelOrder}>
-                            Xác nhận hủy
+                            onClick={handleReturnOrder}>
+                            Xác nhận
                           </button>
                           <button
                             type="button"
