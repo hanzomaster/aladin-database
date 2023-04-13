@@ -18,19 +18,26 @@ function QuantityProduct({
   const [isOpen, setIsOpen] = useState(false);
 
   function closeModal() {
+    setIsUpdate(false);
     setIsOpen(false);
   }
 
   function openModal() {
     setIsOpen(true);
   }
+
+  const [isUpdate, setIsUpdate] = useState(false);
+  const handleUpdate = () => {
+    setIsUpdate(false);
+    setIsOpen(false);
+  };
   return (
     <div>
       <button className="text-[#0070f3] hover:text-[#0070f3]/80" onClick={openModal}>
         Chi tiết
       </button>
       <Transition appear show={isOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={closeModal}>
+        <Dialog as="div" className="relative z-10 w-96" onClose={closeModal}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -92,10 +99,19 @@ function QuantityProduct({
                         <tr
                           key={index}
                           className="border-b bg-white text-sm transition duration-300 ease-in-out hover:bg-gray-100 md:text-base">
-                          <td className="whitespace-nowrap px-2 py-3 md:px-6">{item.colorCode}</td>
+                          <td className="whitespace-nowrap px-1 py-3 md:px-4">{item.colorCode}</td>
                           {item?.productInStock?.map((item, index) => (
-                            <td key={index} className="whitespace-nowrap px-2 py-3 md:px-6">
-                              {item.quantity}
+                            <td key={index} className="whitespace-nowrap px-1 py-3 md:px-4">
+                              {/* {item.quantity} */}
+                              <input
+                                type="number"
+                                className="h-8 w-14 rounded-md border border-gray-300 px-1"
+                                defaultValue={item.quantity}
+                                disabled={!isUpdate}
+                                onChange={(e) => {
+                                  console.log(e.target.value);
+                                }}
+                              />
                             </td>
                           ))}
                         </tr>
@@ -103,12 +119,28 @@ function QuantityProduct({
                     </tbody>
                   </table>
 
-                  <div className="mt-4">
+                  <div className="mt-4 flex justify-between">
+                    {isUpdate ? (
+                      <button
+                        type="button"
+                        className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 hover:bg-blue-200"
+                        onClick={handleUpdate}>
+                        Xác nhận
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 hover:bg-blue-200"
+                        onClick={() => setIsUpdate(true)}>
+                        Cập nhật
+                      </button>
+                    )}
+
                     <button
                       type="button"
-                      className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 hover:bg-blue-200"
+                      className="inline-flex justify-center rounded-md border border-transparent bg-red-100 px-4 py-2 text-sm font-medium text-red-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 hover:bg-red-200"
                       onClick={closeModal}>
-                      OK
+                      Trở về
                     </button>
                   </div>
                 </Dialog.Panel>

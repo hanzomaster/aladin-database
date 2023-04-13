@@ -6,8 +6,8 @@ import NavbarAdmin from "../../components/admin/NavbarAdmin";
 import { getAmountOrder } from "../../components/admin/OrdersList";
 import { env } from "../../env/server.mjs";
 import { AppRouter } from "../../server/trpc/router/_app";
-
 import { trpc } from "../../utils/trpc";
+import Link from "next/link";
 
 function getSumAmountOrders(orders: inferRouterOutputs<AppRouter>["order"]["getAll"]) {
   let sumAmount = 0;
@@ -26,7 +26,7 @@ const Admin: NextPage = () => {
       <NavbarAdmin />
       <main className="w-full bg-[#f9fafb] px-5 py-10 md:px-36 ">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:px-32 lg:py-10">
-          <div className="rounded-xl bg-[#ffcfe1] p-4 shadow-sm ">
+          <Link href="/admin/users" className="rounded-xl bg-[#ffcfe1] p-4 shadow-sm ">
             <div className="p-4">
               <div className="mb-2 text-lg font-semibold text-gray-800 md:text-2xl">
                 {users?.length}
@@ -48,8 +48,8 @@ const Admin: NextPage = () => {
                 <span className="ml-2">Người dùng</span>
               </div>
             </div>
-          </div>
-          <div className="rounded-xl bg-[#fef3c7] p-4 shadow-sm ">
+          </Link>
+          <Link href="/admin/orders" className="rounded-xl bg-[#fef3c7] p-4 shadow-sm ">
             <div className="p-4">
               <div className="mb-2 text-lg font-semibold text-gray-800 md:text-2xl">
                 {orders?.length}
@@ -71,8 +71,8 @@ const Admin: NextPage = () => {
                 <span className="ml-2">Đơn hàng</span>
               </div>
             </div>
-          </div>
-          <div className="rounded-xl bg-[#d1fae5] p-4 shadow-sm ">
+          </Link>
+          <Link href="/admin/products" className="rounded-xl bg-[#d1fae5] p-4 shadow-sm ">
             <div className="p-4">
               <div className="mb-2 text-lg font-semibold text-gray-800 md:text-2xl">
                 {products?.length}
@@ -94,7 +94,7 @@ const Admin: NextPage = () => {
                 <span className="ml-2">Sản phẩm</span>
               </div>
             </div>
-          </div>
+          </Link>
           <div className="rounded-xl bg-[#70d1e5] p-4 shadow-sm ">
             <div className="p-4">
               <div className="mb-2 text-lg font-semibold text-gray-800 md:text-2xl">

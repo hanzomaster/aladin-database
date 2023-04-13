@@ -51,6 +51,13 @@ const OrderDetail = () => {
     setIsOpen(true);
   }
 
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  function closeConfirmModal() {
+    setIsConfirmOpen(false);
+  }
+  function openConfirmModal() {
+    setIsConfirmOpen(true);
+  }
   return (
     <>
       <Navbar />
@@ -153,12 +160,71 @@ const OrderDetail = () => {
                   </div>
                   <p className="text-lg font-semibold leading-6 text-gray-800">0 &#8363;</p>
                 </div>
-                {order?.status === "INPROCESS" && (
-                  <div className="flex w-full items-center justify-center">
-                    {/* TODO: Sửa lại màu cho đơn hàng bị cancel */}
-                    <button className="w-96 bg-gray-600 py-5 text-base font-medium leading-4 text-white focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 hover:bg-gray-800 md:w-full">
-                      Đã nhận đươc hàng
-                    </button>
+                {order?.status === "SHIPPED" && (
+                  <div>
+                    <div className="flex w-full items-center justify-center">
+                      {/* TODO: Sửa lại màu cho đơn hàng bị cancel */}
+                      <button
+                        onClick={openConfirmModal}
+                        className="w-96 bg-gray-600 py-5 text-base font-medium leading-4 text-white focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 hover:bg-gray-800 md:w-full">
+                        Đã nhận đươc hàng
+                      </button>
+                    </div>
+                    <Transition appear show={isConfirmOpen} as={Fragment}>
+                      <Dialog as="div" className="relative z-10" onClose={closeConfirmModal}>
+                        <Transition.Child
+                          as={Fragment}
+                          enter="ease-out duration-300"
+                          enterFrom="opacity-0"
+                          enterTo="opacity-100"
+                          leave="ease-in duration-200"
+                          leaveFrom="opacity-100"
+                          leaveTo="opacity-0">
+                          <div className="fixed inset-0 bg-black bg-opacity-25" />
+                        </Transition.Child>
+
+                        <div className="fixed inset-0 overflow-y-auto">
+                          <div className="flex min-h-full items-center justify-center p-4 text-center">
+                            <Transition.Child
+                              as={Fragment}
+                              enter="ease-out duration-300"
+                              enterFrom="opacity-0 scale-95"
+                              enterTo="opacity-100 scale-100"
+                              leave="ease-in duration-200"
+                              leaveFrom="opacity-100 scale-100"
+                              leaveTo="opacity-0 scale-95">
+                              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                <Dialog.Title
+                                  as="h3"
+                                  className="text-lg font-medium leading-6 text-gray-900">
+                                  Xác nhận đã nhận hàng
+                                </Dialog.Title>
+                                <div className="mt-2">
+                                  <p className="text-sm text-gray-500">
+                                    Bạn chắc chắn đã nhận hàng và không có khiếu nại gì về đơn hàng?
+                                  </p>
+                                </div>
+
+                                <div className="mt-4 flex justify-between">
+                                  <button
+                                    type="button"
+                                    className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 hover:bg-blue-200"
+                                    onClick={closeConfirmModal}>
+                                    Xác nhận
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="inline-flex justify-center rounded-md border border-transparent bg-red-200 px-4 py-2 text-sm font-medium text-red-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 hover:bg-red-300"
+                                    onClick={closeConfirmModal}>
+                                    Trở về
+                                  </button>
+                                </div>
+                              </Dialog.Panel>
+                            </Transition.Child>
+                          </div>
+                        </div>
+                      </Dialog>
+                    </Transition>
                   </div>
                 )}
               </div>
@@ -216,7 +282,7 @@ const OrderDetail = () => {
                     </button>
                   </div>
                 )}
-                {order?.status === "COMPLETED" && (
+                {order?.status === "SHIPPED" && (
                   <div className="flex w-full items-center justify-center md:items-start md:justify-start">
                     <button
                       className="mt-2 w-96 border border-gray-800 py-3 text-base font-medium leading-4 text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2 hover:bg-gray-200 md:mt-0 2xl:w-full"

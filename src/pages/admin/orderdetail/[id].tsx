@@ -43,14 +43,14 @@ const OrderDetailAdmin = () => {
   const [nameShipper, setNameShipper] = useState("");
   const [phoneShipper, setPhoneShipper] = useState("");
 
-  const people = [
+  const deliveryBrands = [
     { name: "Giao hàng nhanh (GHN)" },
     { name: "J&T Express" },
     { name: "Giao hàng tiết kiệm (GHTK)" },
     { name: "Viettel Post" },
     { name: "Vietnam Post" },
   ];
-  const [selected, setSelected] = useState(people[0]);
+  const [selected, setSelected] = useState(deliveryBrands[0]);
 
   const { data: order } = trpc.order.getOneWhere.useQuery({ orderNumber: id as string });
   return (
@@ -129,7 +129,6 @@ const OrderDetailAdmin = () => {
                   <h3 className="text-base leading-5 ">
                     {order?.status === "SHIPPED" && <p>Đã giao</p>}
                     {order?.status === "CONFIRM_PENDING" && <p>Đang chờ xác nhận</p>}
-                    {order?.status === "INPROCESS" && <p>Đang giao</p>}
                     {order?.status === "CANCEL" && <p>Đã hủy</p>}
                     {order?.status === "CANCEL_PENDING" && <p>Đang chờ hủy</p>}
                     {order?.status === "INPROCESS" && <p> Đang giao</p>}
@@ -173,7 +172,7 @@ const OrderDetailAdmin = () => {
                       phoneShipper={phoneShipper}
                       selected={selected}
                       setSelected={setSelected}
-                      people={people}
+                      deliveryBrands={deliveryBrands}
                     />
                   )}
                   {order?.status === "INPROCESS" && (
@@ -272,11 +271,11 @@ export default OrderDetailAdmin;
 function SelectionList({
   selected,
   setSelected,
-  people,
+  deliveryBrands,
 }: {
   selected: any;
   setSelected: any;
-  people: any;
+  deliveryBrands: any;
 }) {
   return (
     <div className="w-full">
@@ -294,20 +293,20 @@ function SelectionList({
             leaveFrom="opacity-100"
             leaveTo="opacity-0">
             <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-              {people.map((person, personIdx) => (
+              {deliveryBrands.map((brand) => (
                 <Listbox.Option
-                  key={personIdx}
+                  key={brand}
                   className={({ active }) =>
                     `relative cursor-default select-none py-2 pl-10 pr-4 ${
                       active ? "bg-amber-100 text-amber-900" : "text-gray-900"
                     }`
                   }
-                  value={person}>
+                  value={brand}>
                   {({ selected }) => (
                     <>
                       <span
                         className={`block truncate ${selected ? "font-medium" : "font-normal"}`}>
-                        {person.name}
+                        {brand}
                       </span>
                       {selected ? (
                         <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
@@ -337,7 +336,7 @@ function UpdateInProcessStatus({
   phoneShipper,
   selected,
   setSelected,
-  people,
+  deliveryBrands,
 }: {
   isOpen: boolean;
   openModal: () => void;
@@ -349,7 +348,7 @@ function UpdateInProcessStatus({
   phoneShipper: string;
   selected: any;
   setSelected: any;
-  people: any;
+  deliveryBrands: any;
 }) {
   return (
     <div className=" w-full">
@@ -404,7 +403,7 @@ function UpdateInProcessStatus({
                       <SelectionList
                         selected={selected}
                         setSelected={setSelected}
-                        people={people}
+                        deliveryBrands={deliveryBrands}
                       />
                     </div>
                     <div className="flex flex-col gap-2">
