@@ -196,6 +196,7 @@ export const orderRouter = router({
     .input(
       z.object({
         orderNumber: z.string().cuid(),
+        cancelReason: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -219,8 +220,69 @@ export const orderRouter = router({
           orderNumber: input.orderNumber,
         },
         data: {
-          status: OrderStatus.CANCEL,
+          status: OrderStatus.CANCEL_PENDING,
+          cancelReason: input.cancelReason,
         },
       });
+    }),
+
+    UpdateOrderStatus: protectedProcedure
+    .input(
+      z.object({
+        orderNumber: z.string().cuid(),
+        cancelReason: z.string(),
+        returnReason: z.string(),
+        status: z.nativeEnum(OrderStatus,{
+          invalid_type_error: "status must be OrderStatus",
+        })
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // check if order number include in user's order
+      const order = await ctx.prisma.order.findUnique({
+        where: {
+          orderNumber: input.orderNumber,
+        },
+        select: {
+          customerNumber: true,
+        },
+      });
+      if (!order) {
+        throw new Error("Order not found");
+      }
+      if (order.customerNumber !== ctx.session.user.id) {
+        throw new Error("Order not found");
+      }
+      if(input.status === OrderStatus.CANCEL_PENDING) {
+      return ctx.prisma.order.update({
+        where: {
+          orderNumber: input.orderNumber,
+        },
+        data: {
+          status: input.status,
+          cancelReason: input.cancelReason
+        },
+      });} else if (input.status === OrderStatus.RETURN_PENDING) {
+        return ctx.prisma.order.update({
+          where: {
+            orderNumber: input.orderNumber,
+          },
+          data: {
+            status: input.status,
+            returnReason: input.returnReason
+          },
+        });
+      } else {
+        return ctx.prisma.order.update({
+          where: {
+            orderNumber: input.orderNumber,
+          },
+          data: {
+            status: input.status,
+            returnReason: input.returnReason
+          },
+        });
+      }
+
     }),
 });

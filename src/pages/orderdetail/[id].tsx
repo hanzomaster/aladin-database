@@ -29,14 +29,15 @@ const OrderDetail = () => {
   const handleCancelOrder = () => {
     mutation.mutate({
       orderNumber: id as string,
+      cancelReason: comment as string,
     });
   };
 
-  const handleReturnOrder = () => {
-    mutation.mutate({
-      orderNumber: id as string,
-    });
-  };
+  // const handleReturnOrder = () => {
+  //   mutation.mutate({
+  //     orderNumber: id as string,
+  //   });
+  // };
   const { data: order } = trpc.order.getOneWhere.useQuery({ orderNumber: id as string });
 
   const [isOpen, setIsOpen] = useState(false);
@@ -339,8 +340,8 @@ const OrderDetail = () => {
                         <div className="mt-4 flex w-full items-center justify-between">
                           <button
                             type="button"
-                            className="inline-flex justify-center rounded-md border border-transparent bg-red-100 px-4 py-2 text-sm font-medium text-red-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 hover:bg-red-200"
-                            onClick={handleReturnOrder}>
+                            onClick={handleCancelOrder}
+                            className="inline-flex justify-center rounded-md border border-transparent bg-red-100 px-4 py-2 text-sm font-medium text-red-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 hover:bg-red-200">
                             Xác nhận
                           </button>
                           <button
