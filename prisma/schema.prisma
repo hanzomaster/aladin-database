@@ -118,6 +118,8 @@ model Order {
     addressId      String
     status         OrderStatus   @default(CONFIRM_PENDING)
     note           String?       @db.Text
+    shipperName    String?
+    shipperPhone   String?
     cancelReason   String?       @db.Text
     returnReason   String?       @db.Text
     customerNumber String
