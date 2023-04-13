@@ -10,6 +10,13 @@ import { useCart } from "../context/CartContext";
 import { trpc } from "../utils/trpc";
 import CartItem from "./cartItem";
 import DropdownComponent from "./dropdownmenu";
+import Select from 'react-select'
+
+const price = [
+  { value: 'price1', label: 'Dưới 100.000đ' },
+  { value: 'price2', label: '100.000đ-500.000đ' },
+  { value: 'price3', label: 'Trên 500.000đ' }
+]
 
 const userFunc = ["Quản lý tài khoản", "Quản lý đơn hàng", "Đăng xuất"];
 const menuData = ["Sign in"];
@@ -187,10 +194,12 @@ const NavBar = () => {
           </div>
 
           <div className="menu hidden w-full flex-grow px-8 lg:block lg:flex lg:w-auto lg:items-center lg:px-3">
-            <div className="text-md font-bold text-gray-700 lg:flex-grow">
+            <div className="text-md font-bold text-gray-700 lg:flex-grow flex flex-row">
               <DropdownComponent title="Nam" type="male" data={maleData ?? []} />
 
               <DropdownComponent title="Nữ" type="female" data={femaleData ?? []} />
+
+              <Select placeholder="Chọn mức giá" options={price}/>
             </div>
 
             <div className="relative mx-auto hidden text-gray-600 lg:block">
