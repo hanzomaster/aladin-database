@@ -57,6 +57,9 @@ export const productRouter = router({
     ctx.prisma.product.findMany({
       skip: input?.skip,
       take: input?.take,
+      where: {
+        onSale: true,
+      },
       include: {
         line: {
           select: {

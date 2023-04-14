@@ -2,9 +2,9 @@ import { Product } from "@prisma/client";
 import { inferRouterOutputs } from "@trpc/server";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import Pagination from "../components/Pagination";
 import ItemCard from "../components/itemCard";
 import NavBar from "../components/navbar";
-import Pagination from "../components/Pagination";
 import { AppRouter } from "../server/trpc/router/_app";
 import { trpc } from "../utils/trpc";
 export const postsPerPage = 20;
@@ -62,8 +62,8 @@ const Products = () => {
       type: name as string,
       gender: gender === "male" ? "M" : "F",
     });
-    const currentPosts: inferRouterOutputs<AppRouter>["product"]["getAll"] | undefined =
-      data?.slice(firstPostIndex, lastPostIndex);
+    // const currentPosts: inferRouterOutputs<AppRouter>["product"]["getAll"] | undefined =
+    //   data?.slice(firstPostIndex, lastPostIndex);
     return (
       <>
         <section>
