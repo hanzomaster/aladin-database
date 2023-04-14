@@ -26,11 +26,30 @@ const OrderDetail = () => {
     },
   });
 
-  const handleCancelOrder = () => {
-    mutation.mutate({
-      orderNumber: id as string,
-      cancelReason: comment as string,
-    });
+  const returnMutation = trpc.order.ReturnOrder.useMutation({
+    onSuccess: () => {
+      toast({
+        type: "success",
+        duration: 1500,
+        message: "Hủy đơn hàng thành công!",
+        position: "topCenter",
+      });
+      window.location.reload();
+    },
+  });
+
+  const handleCancelOrder = (status: any) => {
+    if (status === "CONFIRM_PENDING") {
+      mutation.mutate({
+        orderNumber: id as string,
+        cancelReason: comment as string,
+      });
+    } else {
+      returnMutation.mutate({
+        orderNumber: id as string,
+        cancelReason: comment as string,
+      });
+    }
   };
 
   // const handleReturnOrder = () => {
@@ -340,7 +359,7 @@ const OrderDetail = () => {
                         <div className="mt-4 flex w-full items-center justify-between">
                           <button
                             type="button"
-                            onClick={handleCancelOrder}
+                            onClick={() => handleCancelOrder(order?.status)}
                             className="inline-flex justify-center rounded-md border border-transparent bg-red-100 px-4 py-2 text-sm font-medium text-red-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 hover:bg-red-200">
                             Xác nhận
                           </button>

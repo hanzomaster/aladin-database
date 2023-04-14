@@ -1,11 +1,10 @@
+import { Dialog, Listbox, Transition } from "@headlessui/react";
+import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { Fragment, useState } from "react";
 import NavbarAdmin from "../../../components/admin/NavbarAdmin";
 import OrderedItem from "../../../components/user/OrderedItem";
-import { Dialog, Transition } from "@headlessui/react";
-import { useState, Fragment } from "react";
-import { Listbox } from "@headlessui/react";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 
 import { trpc } from "../../../utils/trpc";
 
@@ -14,24 +13,11 @@ const OrderDetailAdmin = () => {
   const { id } = router.query;
   let total = 0;
   const { data: session } = useSession();
-  const mutation = trpc.order.cancelOrder.useMutation();
-
-  const handleCancelOrder = () => {
-    mutation.mutate({
-      orderNumber: id as string,
-    });
-  };
+  const mutation = trpc.order.updateOrderInProcess.useMutation();
 
   const [isOpen, setIsOpen] = useState(false);
   const openModal = () => setIsOpen(true);
-  const handleSubmit = () => {
-    console.log({
-      selected: selected,
-      nameShipper: nameShipper,
-      phoneShipper: phoneShipper,
-    });
-    setIsOpen(false);
-  };
+
   const closeModal = () => {
     setIsOpen(false);
   };
@@ -42,7 +28,19 @@ const OrderDetailAdmin = () => {
 
   const [nameShipper, setNameShipper] = useState("");
   const [phoneShipper, setPhoneShipper] = useState("");
-
+  const handleSubmit = () => {
+    mutation.mutate({
+      orderNumber: id as string,
+      shipperName: nameShipper as string,
+      shipperPhone: phoneShipper as string,
+    });
+    console.log({
+      selected: selected,
+      nameShipper: nameShipper,
+      phoneShipper: phoneShipper,
+    });
+    setIsOpen(false);
+  };
   const deliveryBrands = [
     { name: "Giao hàng nhanh (GHN)" },
     { name: "J&T Express" },
@@ -66,6 +64,7 @@ const OrderDetailAdmin = () => {
           <p className="text-base font-medium leading-6 text-gray-600">
             {order?.orderDate.toDateString() + " at " + order?.orderDate.toTimeString()}{" "}
           </p>
+          <p className="text-base font-medium leading-6 text-gray-600">{order?.customerNumber} </p>
         </div>
         <div className="jusitfy-center mt-6 flex w-full flex-col items-stretch  space-y-4 md:space-y-6 xl:flex-row xl:space-x-8 xl:space-y-0">
           <div className="flex h-[45rem] w-full flex-col items-start justify-start space-y-4  md:space-y-6 xl:space-y-8">
@@ -148,9 +147,16 @@ const OrderDetailAdmin = () => {
                     </div>
                     <div className="flex flex-col items-center justify-start">
                       <p className="text-lg font-semibold leading-6 text-gray-800">
-                        Aladin Delivery
+                        {order?.status === "RETURN_PENDING" || order?.status === "CANCEL_PENDING"
+                          ? "Lý do:"
+                          : "Aladin Delivery"}
                         <br />
-                        <span className="font-normal">Giao hàng toàn quốc</span>
+                        {order?.status === "RETURN_PENDING" && <p>{order?.returnReason}</p>}
+                        {order?.status === "RETURN_PENDING" && <p>{order?.cancelReason}</p>}
+                        {!(order?.status === "RETURN_PENDING") &&
+                          !(order?.status === "CANCEL_PENDING") && (
+                            <span className="font-normal">Giao hàng toàn quốc</span>
+                          )}
                       </p>
                     </div>
                   </div>
