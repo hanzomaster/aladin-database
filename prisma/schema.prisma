@@ -121,7 +121,6 @@ model Order {
     shipperName    String?
     shipperPhone   String?
     cancelReason   String?       @db.Text
-    returnReason   String?       @db.Text
     customerNumber String
     orderdetail    OrderDetail[]
 

@@ -1,4 +1,5 @@
 import { OrderStatus, Prisma } from "@prisma/client";
+import { TRPCError } from '@trpc/server';
 import { z } from "zod";
 import { adminProcedure, protectedProcedure, router } from "../trpc";
 
@@ -103,13 +104,22 @@ export const orderRouter = router({
         },
       });
       if (!userCart) {
-        throw new Error("Cart not found");
+        throw new TRPCError({
+          code : 'NOT_FOUND',
+          message: 'Cart not found'
+        });
       }
       if (!userCart.cartItem.length) {
-        throw new Error("Cart is empty");
+        throw new TRPCError({
+          code : 'NOT_FOUND',
+          message: 'Cart is empty'
+        });
       }
       if (!input.address && !input.addressId) {
-        throw new Error("Address is required");
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Address is required',
+        });
       }
       let result: Prisma.OrderGetPayload<null> | undefined;
       if (!input.address && input.addressId) {
@@ -209,11 +219,11 @@ export const orderRouter = router({
           customerNumber: true,
         },
       });
-      if (!order) {
-        throw new Error("Order not found");
-      }
-      if (order.customerNumber !== ctx.session.user.id) {
-        throw new Error("Order not found");
+      if (!order || order.customerNumber !== ctx.session.user.id ) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Order not found",
+        });
       }
       return ctx.prisma.order.update({
         where: {
@@ -233,7 +243,7 @@ export const orderRouter = router({
         cancelReason: z.string(),
         returnReason: z.string(),
         status: z.nativeEnum(OrderStatus,{
-          invalid_type_error: "status must be OrderStatus",
+          invalid_type_error: "status must be an enum",
         })
       })
     )
@@ -247,11 +257,11 @@ export const orderRouter = router({
           customerNumber: true,
         },
       });
-      if (!order) {
-        throw new Error("Order not found");
-      }
-      if (order.customerNumber !== ctx.session.user.id) {
-        throw new Error("Order not found");
+      if (!order || order.customerNumber !== ctx.session.user.id ) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Order not found",
+        });
       }
       if(input.status === OrderStatus.CANCEL_PENDING) {
       return ctx.prisma.order.update({
