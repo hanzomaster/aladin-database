@@ -235,7 +235,71 @@ export const orderRouter = router({
         },
       });
     }),
-
+    acceptCancelOrder: protectedProcedure
+    .input(
+      z.object({
+        orderNumber: z.string().cuid(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // check if order number include in user's order
+      const order = await ctx.prisma.order.findUnique({
+        where: {
+          orderNumber: input.orderNumber,
+        },
+        select: {
+          customerNumber: true,
+        },
+      });
+      if (!order || order.customerNumber !== ctx.session.user.id ) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Order not found",
+        });
+      }
+      return ctx.prisma.order.update({
+        where: {
+          orderNumber: input.orderNumber,
+        },
+        data: {
+          status: OrderStatus.RETURN,
+        },
+      });
+    }),
+    updateOrderStatus: protectedProcedure
+    .input(
+      z.object({
+        orderNumber: z.string().cuid(),
+        status: z.nativeEnum(OrderStatus,{
+          invalid_type_error: "Size must be ClothSize",
+        })
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // check if order number include in user's order
+      const order = await ctx.prisma.order.findUnique({
+        where: {
+          orderNumber: input.orderNumber,
+        },
+        select: {
+          customerNumber: true,
+        },
+      });
+      if (!order || order.customerNumber !== ctx.session.user.id ) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Order not found",
+        });
+      }
+      return ctx.prisma.order.update({
+        where: {
+          orderNumber: input.orderNumber,
+        },
+        data: {
+          status: input.status,
+        },
+      });
+    }),
     updateOrderInProcess: protectedProcedure
     .input(
       z.object({

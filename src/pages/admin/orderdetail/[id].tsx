@@ -6,6 +6,7 @@ import { Fragment, useState } from "react";
 import NavbarAdmin from "../../../components/admin/NavbarAdmin";
 import OrderedItem from "../../../components/user/OrderedItem";
 
+import { OrderStatus } from "@prisma/client";
 import { trpc } from "../../../utils/trpc";
 
 const OrderDetailAdmin = () => {
@@ -14,6 +15,8 @@ const OrderDetailAdmin = () => {
   let total = 0;
   const { data: session } = useSession();
   const mutation = trpc.order.updateOrderInProcess.useMutation();
+  const cancelMutation = trpc.order.acceptCancelOrder.useMutation();
+  const updateMutation = trpc.order.updateOrderStatus.useMutation();
 
   const [isOpen, setIsOpen] = useState(false);
   const openModal = () => setIsOpen(true);
@@ -22,7 +25,16 @@ const OrderDetailAdmin = () => {
     setIsOpen(false);
   };
 
-  const handleUpdateStatus = () => {
+  const handleUpdateStatus = (status: string) => {
+    if (status === "CANCEL_PENDING") {
+      updateMutation.mutate({ orderNumber: id as string, status: OrderStatus.CANCEL });
+    }
+    if (status === "RETURN_PENDING") {
+      updateMutation.mutate({ orderNumber: id as string, status: OrderStatus.RETURN });
+    }
+    if (status === "INPROCESS") {
+      updateMutation.mutate({ orderNumber: id as string, status: OrderStatus.SHIPPED });
+    }
     setIsOpen(false);
   };
 
@@ -151,8 +163,8 @@ const OrderDetailAdmin = () => {
                           ? "Lý do:"
                           : "Aladin Delivery"}
                         <br />
-                        {order?.status === "RETURN_PENDING" && <p>{order?.returnReason}</p>}
                         {order?.status === "RETURN_PENDING" && <p>{order?.cancelReason}</p>}
+                        {order?.status === "CANCEL_PENDING" && <p>{order?.cancelReason}</p>}
                         {!(order?.status === "RETURN_PENDING") &&
                           !(order?.status === "CANCEL_PENDING") && (
                             <span className="font-normal">Giao hàng toàn quốc</span>
@@ -186,7 +198,7 @@ const OrderDetailAdmin = () => {
                       isOpen={isOpen}
                       openModal={openModal}
                       closeModal={closeModal}
-                      handleUpdateStatus={handleUpdateStatus}
+                      handleUpdateStatus={() => handleUpdateStatus("INPROCESS")}
                       updateStatus="Đã giao"
                     />
                   )}
@@ -195,7 +207,7 @@ const OrderDetailAdmin = () => {
                       isOpen={isOpen}
                       openModal={openModal}
                       closeModal={closeModal}
-                      handleUpdateStatus={handleUpdateStatus}
+                      handleUpdateStatus={() => handleUpdateStatus("CANCEL_PENDING")}
                       updateStatus="Đã hủy"
                     />
                   )}
@@ -204,7 +216,7 @@ const OrderDetailAdmin = () => {
                       isOpen={isOpen}
                       openModal={openModal}
                       closeModal={closeModal}
-                      handleUpdateStatus={handleUpdateStatus}
+                      handleUpdateStatus={() => handleUpdateStatus("RETURN_PENDING")}
                       updateStatus="Đã đổi / trả"
                     />
                   )}
@@ -281,7 +293,7 @@ function SelectionList({
 }: {
   selected: any;
   setSelected: any;
-  deliveryBrands: any;
+  deliveryBrands: { name: string }[];
 }) {
   return (
     <div className="w-full">
