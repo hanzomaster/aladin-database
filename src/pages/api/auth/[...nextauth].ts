@@ -1,4 +1,4 @@
-import { prisma } from "@db/client";
+import { masterPrisma } from "@db/client";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import EmailProvider from "next-auth/providers/email";
@@ -19,7 +19,7 @@ export const authOptions: NextAuthOptions = {
     // @ts-ignore
     signIn: async (params) => {
       if (params.user.email) {
-        const status = await prisma.user.findUnique({
+        const status = await masterPrisma.user.findUnique({
           where: {
             email: params.user.email,
           },
@@ -36,13 +36,13 @@ export const authOptions: NextAuthOptions = {
   },
   events: {
     createUser: async (message) => {
-      await prisma.cart.create({
+      await masterPrisma.cart.create({
         data: {
           userId: message.user.id,
         },
       });
       if (message.user.email && env.ADMIN_EMAILS.split(",").includes(message.user.email)) {
-        await prisma.user.update({
+        await masterPrisma.user.update({
           where: {
             email: message.user.email,
           },
@@ -54,7 +54,7 @@ export const authOptions: NextAuthOptions = {
     },
     linkAccount: async ({ user, profile }) => {
       if (!user.name) {
-        await prisma.user.update({
+        await masterPrisma.user.update({
           where: {
             id: user.id,
           },
@@ -64,7 +64,7 @@ export const authOptions: NextAuthOptions = {
         });
       }
       if (!user.image) {
-        await prisma.user.update({
+        await masterPrisma.user.update({
           where: {
             id: user.id,
           },
@@ -76,7 +76,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   // Configure one or more authentication providers
-  adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(masterPrisma),
   providers: [
     EmailProvider({
       server: env.EMAIL_SERVER,

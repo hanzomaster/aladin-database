@@ -2,7 +2,7 @@ import { NextPage } from "next";
 import Navbar from "../components/navbar";
 import { default as AddressItem } from "../components/user/AddressItem";
 import SidebarAccount from "../components/user/SidebarAccount";
-import { trpc } from "../utils/trpc";
+import { trpc } from "@utils/trpc";
 
 const AddressView: NextPage = () => {
   const { data } = trpc.user.address.get.useQuery();

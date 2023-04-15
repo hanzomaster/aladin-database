@@ -6,10 +6,10 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { Fragment, useState } from "react";
+import { useToast } from "../../../components/Toast";
 import NavbarAdmin from "../../../components/admin/NavbarAdmin";
 import CommentItem from "../../../components/commentItem";
-import { useToast } from "../../../components/Toast";
-import { trpc } from "../../../utils/trpc";
+import { trpc } from "@utils/trpc";
 
 const sizeGuideSrc = "https://canifa.com/assets/Women-measurement.png";
 // const description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
@@ -118,7 +118,7 @@ const ProductDetailAdmin: NextPage = () => {
                           : ""
                       }
                       priority={true}
-                      layout="fill"
+                      fill
                       alt="Ảnh sản phẩm"
                       className="object-fit"></Image>
                   </div>

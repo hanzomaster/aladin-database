@@ -5,7 +5,7 @@ import Navbar from "../components/navbar";
 
 import { useToast } from "../components/Toast";
 import SidebarAccount from "../components/user/SidebarAccount";
-import { trpc } from "../utils/trpc";
+import { trpc } from "@utils/trpc";
 
 const Account: NextPage = () => {
   // dynamic handle focus on input

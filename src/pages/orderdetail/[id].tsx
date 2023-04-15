@@ -6,7 +6,7 @@ import { useToast } from "../../components/Toast";
 import Navbar from "../../components/navbar";
 import OrderedItem from "../../components/user/OrderedItem";
 
-import { trpc } from "../../utils/trpc";
+import { trpc } from "@utils/trpc";
 
 const OrderDetail = () => {
   const router = useRouter();
@@ -26,7 +26,7 @@ const OrderDetail = () => {
     },
   });
 
-  const returnMutation = trpc.order.ReturnOrder.useMutation({
+  const returnMutation = trpc.order.returnOrder.useMutation({
     onSuccess: () => {
       toast({
         type: "success",

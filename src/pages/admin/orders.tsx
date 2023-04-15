@@ -8,7 +8,7 @@ import NavbarAdmin from "../../components/admin/NavbarAdmin";
 import OrdersList from "../../components/admin/OrdersList";
 import Searchbar from "../../components/admin/Searchbar";
 import { AppRouter } from "../../server/trpc/router/_app";
-import { trpc } from "../../utils/trpc";
+import { trpc } from "@utils/trpc";
 import { STATIC_STATUS_PAGES } from "next/dist/shared/lib/constants";
 
 const Orders: NextPage = () => {
@@ -37,8 +37,8 @@ const Orders: NextPage = () => {
 
   const [isFiltering, setIsFiltering] = useState(false);
 
-  const handleSetFilter = (e: any) => {
-    setFilter(e);
+  const handleSetFilter = (e: string) => {
+    setFilter(e as string);
     handleFilter(e);
   };
   const { data } = trpc.order.getAll.useQuery();
@@ -57,7 +57,7 @@ const Orders: NextPage = () => {
     inferRouterOutputs<AppRouter>["order"]["getAll"] | undefined
   >(data);
 
-  const handleFilter = (e: any) => {
+  const handleFilter = (e: string) => {
     setIsFiltering(true);
     switch (e) {
       case "Chờ xác nhận": {
@@ -104,8 +104,7 @@ const Orders: NextPage = () => {
       }
       default:
         setIsFiltering(false);
-        const result = [...data];
-        setFilterResult(result);
+        setFilterResult(data);
         break;
     }
   };
@@ -148,7 +147,15 @@ const Orders: NextPage = () => {
 };
 export default Orders;
 
-function Filter({ filter, handleSetFilter, statusList }: any) {
+function Filter({
+  filter,
+  handleSetFilter,
+  statusList,
+}: {
+  filter: string;
+  handleSetFilter: (e: string) => void;
+  statusList: string[];
+}) {
   return (
     <div className="flex gap-5">
       <div className="w-72">
@@ -172,14 +179,14 @@ function Filter({ filter, handleSetFilter, statusList }: any) {
               <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                 {statusList.map((status) => (
                   <Listbox.Option
-                    key={STATIC_STATUS_PAGES}
+                    key={status}
                     className={({ active }) =>
                       `relative cursor-default select-none py-2 pl-10 pr-4 ${
                         active ? "bg-amber-100 text-amber-900" : "text-gray-900"
                       }`
                     }
                     value={status}>
-                    {({ filter }) => (
+                    {() => (
                       <>
                         <span
                           className={`block truncate ${filter ? "font-medium" : "font-normal"}`}>

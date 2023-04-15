@@ -2,7 +2,7 @@ import { ClothSize } from "@prisma/client";
 import { debounce } from "lodash";
 import Image from "next/image";
 import { useState } from "react";
-import { trpc } from "../utils/trpc";
+import { trpc } from "@utils/trpc";
 import { useToast } from "./Toast";
 
 type ClothSizeLiteral = `${ClothSize}`;
@@ -57,7 +57,7 @@ const CartItem = ({ product }: any) => {
         <div className="relative h-full w-full">
           <Image
             src={product?.productDetail?.image}
-            layout="fill"
+            fill
             alt="Ảnh sản phẩm"
             priority={true}
             className=" object-cover object-center"></Image>

@@ -2,7 +2,7 @@ import { Dialog, RadioGroup, Transition } from "@headlessui/react";
 import { ClothSize } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { Fragment, useState } from "react";
-import { trpc } from "../utils/trpc";
+import { trpc } from "@utils/trpc";
 import { useToast } from "./Toast";
 
 function classNames(...classes: string[]) {

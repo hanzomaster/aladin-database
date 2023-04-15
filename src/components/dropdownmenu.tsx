@@ -149,78 +149,74 @@ export default function DropdownComponent({
             {type === "menu" &&
               data?.map((content) => {
                 return (
-                  <>
-                    <Menu.Item>
-                      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-                      {/* @ts-ignore */}
-                      {({ active }) => {
-                        if (content === "Sign in")
-                          return (
-                            <div
-                              onClick={() => signIn()}
-                              className={classNames(
-                                active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                                "block cursor-pointer px-4 py-2 text-sm"
-                              )}>
-                              {content}
-                            </div>
-                          );
-                      }}
-                    </Menu.Item>
-                  </>
+                  <Menu.Item key={content}>
+                    {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+                    {/* @ts-ignore */}
+                    {({ active }) => {
+                      if (content === "Sign in")
+                        return (
+                          <div
+                            onClick={() => signIn()}
+                            className={classNames(
+                              active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                              "block cursor-pointer px-4 py-2 text-sm"
+                            )}>
+                            {content}
+                          </div>
+                        );
+                    }}
+                  </Menu.Item>
                 );
               })}
             {type === "user" &&
               data?.map((content) => {
                 return (
-                  <>
-                    <Menu.Item>
-                      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-                      {/* @ts-ignore */}
-                      {({ active }) => {
-                        if (content === "Đăng xuất")
-                          return (
-                            <div
-                              key={content}
-                              onClick={() => {
-                                signOut();
-                                window.location.href = "/home";
-                              }}
-                              className={classNames(
-                                active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                                "block cursor-pointer px-4 py-2 text-sm"
-                              )}>
-                              {content}
-                            </div>
-                          );
-                        if (content === "Quản lý tài khoản")
-                          return (
-                            <div
-                              key={content}
-                              onClick={() => (window.location.href = "/account")}
-                              className={classNames(
-                                active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                                "block cursor-pointer px-4 py-2 text-sm"
-                              )}>
-                              {content}
-                            </div>
-                          );
+                  <Menu.Item key={content}>
+                    {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+                    {/* @ts-ignore */}
+                    {({ active }) => {
+                      if (content === "Đăng xuất")
+                        return (
+                          <div
+                            key={content}
+                            onClick={() => {
+                              signOut();
+                              window.location.href = "/home";
+                            }}
+                            className={classNames(
+                              active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                              "block cursor-pointer px-4 py-2 text-sm"
+                            )}>
+                            {content}
+                          </div>
+                        );
+                      if (content === "Quản lý tài khoản")
+                        return (
+                          <div
+                            key={content}
+                            onClick={() => (window.location.href = "/account")}
+                            className={classNames(
+                              active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                              "block cursor-pointer px-4 py-2 text-sm"
+                            )}>
+                            {content}
+                          </div>
+                        );
 
-                        if (content === "Quản lý đơn hàng")
-                          return (
-                            <div
-                              key={content}
-                              onClick={() => (window.location.href = "/purchase")}
-                              className={classNames(
-                                active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                                "block cursor-pointer px-4 py-2 text-sm"
-                              )}>
-                              {content}
-                            </div>
-                          );
-                      }}
-                    </Menu.Item>
-                  </>
+                      if (content === "Quản lý đơn hàng")
+                        return (
+                          <div
+                            key={content}
+                            onClick={() => (window.location.href = "/purchase")}
+                            className={classNames(
+                              active ? "bg-gray-100 text-gray-900" : "text-gray-700",
+                              "block cursor-pointer px-4 py-2 text-sm"
+                            )}>
+                            {content}
+                          </div>
+                        );
+                    }}
+                  </Menu.Item>
                 );
               })}
             {/* {getMenuData(type)} */}

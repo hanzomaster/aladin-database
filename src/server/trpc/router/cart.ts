@@ -5,7 +5,7 @@ export const cartRouter = router({
    * Get the cart of the current logged in user
    */
   get: protectedProcedure.query(({ ctx }) =>
-    ctx.prisma.cart.findUnique({
+    ctx.slavePrisma.cart.findUnique({
       where: {
         userId: ctx.session.user.id,
       },

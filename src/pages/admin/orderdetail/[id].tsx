@@ -7,7 +7,7 @@ import NavbarAdmin from "../../../components/admin/NavbarAdmin";
 import OrderedItem from "../../../components/user/OrderedItem";
 
 import { OrderStatus } from "@prisma/client";
-import { trpc } from "../../../utils/trpc";
+import { trpc } from "@utils/trpc";
 
 const OrderDetailAdmin = () => {
   const router = useRouter();
@@ -25,15 +25,19 @@ const OrderDetailAdmin = () => {
     setIsOpen(false);
   };
 
-  const handleUpdateStatus = (status: string) => {
-    if (status === "CANCEL_PENDING") {
-      updateMutation.mutate({ orderNumber: id as string, status: OrderStatus.CANCEL });
-    }
-    if (status === "RETURN_PENDING") {
-      updateMutation.mutate({ orderNumber: id as string, status: OrderStatus.RETURN });
-    }
-    if (status === "INPROCESS") {
-      updateMutation.mutate({ orderNumber: id as string, status: OrderStatus.SHIPPED });
+  const handleUpdateStatus = (status: OrderStatus) => {
+    switch (status) {
+      case OrderStatus.CANCEL_PENDING:
+        updateMutation.mutate({ orderNumber: id as string, status: OrderStatus.CANCEL });
+        break;
+      case OrderStatus.RETURN_PENDING:
+        updateMutation.mutate({ orderNumber: id as string, status: OrderStatus.RETURN });
+        break;
+      case OrderStatus.INPROCESS:
+        updateMutation.mutate({ orderNumber: id as string, status: OrderStatus.SHIPPED });
+        break;
+      default:
+        break;
     }
     setIsOpen(false);
   };
@@ -198,7 +202,7 @@ const OrderDetailAdmin = () => {
                       isOpen={isOpen}
                       openModal={openModal}
                       closeModal={closeModal}
-                      handleUpdateStatus={() => handleUpdateStatus("INPROCESS")}
+                      handleUpdateStatus={() => handleUpdateStatus(OrderStatus.INPROCESS)}
                       updateStatus="Đã giao"
                     />
                   )}
@@ -207,7 +211,7 @@ const OrderDetailAdmin = () => {
                       isOpen={isOpen}
                       openModal={openModal}
                       closeModal={closeModal}
-                      handleUpdateStatus={() => handleUpdateStatus("CANCEL_PENDING")}
+                      handleUpdateStatus={() => handleUpdateStatus(OrderStatus.CANCEL_PENDING)}
                       updateStatus="Đã hủy"
                     />
                   )}
@@ -216,7 +220,7 @@ const OrderDetailAdmin = () => {
                       isOpen={isOpen}
                       openModal={openModal}
                       closeModal={closeModal}
-                      handleUpdateStatus={() => handleUpdateStatus("RETURN_PENDING")}
+                      handleUpdateStatus={() => handleUpdateStatus(OrderStatus.RETURN_PENDING)}
                       updateStatus="Đã đổi / trả"
                     />
                   )}

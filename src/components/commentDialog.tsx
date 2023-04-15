@@ -1,6 +1,6 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
-import { trpc } from "../utils/trpc";
+import { trpc } from "@utils/trpc";
 import { useToast } from "./Toast";
 
 function classNames(...classes: string[]) {

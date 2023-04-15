@@ -5,7 +5,7 @@ import ColorChooser from "../../components/admin/chooseColorDialog";
 import DropDownItem from "../../components/admin/DropDownItem";
 import NavbarAdmin from "../../components/admin/NavbarAdmin";
 import { useToast } from "../../components/Toast";
-import { trpc } from "../../utils/trpc";
+import { trpc } from "@utils/trpc";
 // import { test } from "../utils/test";
 const NewProduct: NextPage = () => {
   const [productDetailList, setProductDetailList] = useState<

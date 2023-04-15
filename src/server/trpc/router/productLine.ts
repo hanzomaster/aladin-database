@@ -4,18 +4,34 @@ import {
   createProductLineSchema,
   getAllSchema,
   getManyProductLineSchema,
-  getOneProductLineSchema
+  getOneProductLineSchema,
 } from "./dto";
+import redisClient from "@utils/redis";
+import { TRPCError } from "@trpc/server";
+import { ProductLine } from "@prisma/client";
 
 export const productLineRouter = router({
-  getAll: publicProcedure.input(getAllSchema).query(({ ctx, input }) =>
-    ctx.prisma.productLine.findMany({
-      skip: input?.skip,
-      take: input?.take,
-    })
-  ),
+  getAll: publicProcedure.input(getAllSchema).query(async ({ ctx, input }) => {
+    try {
+      const cacheResult = await redisClient.get("products");
+      if (cacheResult) {
+        return (await JSON.parse(cacheResult)) as ProductLine[];
+      }
+      const result = await ctx.slavePrisma.productLine.findMany({
+        skip: input?.skip,
+        take: input?.take,
+      });
+      redisClient.set("productLines", JSON.stringify(result));
+      return result;
+    } catch (err) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Something went wrong",
+      });
+    }
+  }),
   getOneWhere: publicProcedure.input(getOneProductLineSchema).query(({ ctx, input }) =>
-    ctx.prisma.productLine.findUnique({
+    ctx.slavePrisma.productLine.findUnique({
       where: input,
       include: {
         products: true,
@@ -23,7 +39,7 @@ export const productLineRouter = router({
     })
   ),
   getManyWhere: publicProcedure.input(getManyProductLineSchema).query(({ ctx, input }) =>
-    ctx.prisma.productLine.findMany({
+    ctx.slavePrisma.productLine.findMany({
       where: input,
     })
   ),

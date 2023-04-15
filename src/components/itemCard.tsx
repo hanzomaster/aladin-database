@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useState } from "react";
 
-import { trpc } from "../utils/trpc";
+import { trpc } from "@utils/trpc";
 import { useToast } from "./Toast";
 import ChooseSize from "./chooseSizeDialog";
 function classNames(...classes: any) {
@@ -63,11 +63,11 @@ export default function ItemCard({ item }: { item: any }) {
       <div
         key={item.code}
         className=" border-black-50 text-md group col-span-1 row-span-1 h-fit items-center rounded-lg bg-pink-50 font-bold drop-shadow-md">
-        <div className=" relative overflow-hidden">
+        <div className="relative overflow-hidden">
           <div className="h-96 w-full">
             <Image
               src={selectedImage ? selectedImage : item.productDetail[0]?.image}
-              layout="fill"
+              fill
               className="object-cover"
               alt="Image"
               priority={true}></Image>

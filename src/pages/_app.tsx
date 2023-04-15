@@ -8,7 +8,7 @@ import Footer from "../components/footer";
 import { CartProvider } from "../context/CartContext";
 
 import "../styles/globals.css";
-import { trpc } from "../utils/trpc";
+import { trpc } from "@utils/trpc";
 
 export { reportWebVitals } from "next-axiom";
 

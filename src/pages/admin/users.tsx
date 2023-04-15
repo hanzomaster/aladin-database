@@ -6,7 +6,7 @@ import Searchbar from "../../components/admin/Searchbar";
 import UsersList from "../../components/admin/UsersList";
 import Pagination, { postsPerPage } from "../../components/Pagination";
 import { AppRouter } from "../../server/trpc/router/_app";
-import { trpc } from "../../utils/trpc";
+import { trpc } from "@utils/trpc";
 
 const Users: NextPage = () => {
   const [currentPage, setCurrentPage] = useState(1);

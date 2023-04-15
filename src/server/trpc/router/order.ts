@@ -1,5 +1,5 @@
 import { OrderStatus, Prisma } from "@prisma/client";
-import { TRPCError } from '@trpc/server';
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { adminProcedure, protectedProcedure, router } from "../trpc";
 
@@ -20,7 +20,7 @@ export const orderRouter = router({
     });
   }),
   getAllOfUser: protectedProcedure.query(({ ctx }) => {
-    return ctx.prisma.order.findMany({
+    return ctx.slavePrisma.order.findMany({
       where: {
         customerNumber: ctx.session.user.id,
       },
@@ -44,7 +44,7 @@ export const orderRouter = router({
       })
     )
     .query(({ ctx, input }) => {
-      return ctx.prisma.order.findUnique({
+      return ctx.slavePrisma.order.findUnique({
         where: {
           orderNumber: input.orderNumber,
         },
@@ -105,20 +105,20 @@ export const orderRouter = router({
       });
       if (!userCart) {
         throw new TRPCError({
-          code : 'NOT_FOUND',
-          message: 'Cart not found'
+          code: "NOT_FOUND",
+          message: "Cart not found",
         });
       }
       if (!userCart.cartItem.length) {
         throw new TRPCError({
-          code : 'NOT_FOUND',
-          message: 'Cart is empty'
+          code: "NOT_FOUND",
+          message: "Cart is empty",
         });
       }
       if (!input.address && !input.addressId) {
         throw new TRPCError({
-          code: 'BAD_REQUEST',
-          message: 'Address is required',
+          code: "BAD_REQUEST",
+          message: "Address is required",
         });
       }
       let result: Prisma.OrderGetPayload<null> | undefined;
@@ -219,7 +219,7 @@ export const orderRouter = router({
           customerNumber: true,
         },
       });
-      if (!order || order.customerNumber !== ctx.session.user.id ) {
+      if (!order || order.customerNumber !== ctx.session.user.id) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Order not found",
@@ -235,7 +235,7 @@ export const orderRouter = router({
         },
       });
     }),
-    acceptCancelOrder: protectedProcedure
+  acceptCancelOrder: protectedProcedure
     .input(
       z.object({
         orderNumber: z.string().cuid(),
@@ -251,7 +251,7 @@ export const orderRouter = router({
           customerNumber: true,
         },
       });
-      if (!order || order.customerNumber !== ctx.session.user.id ) {
+      if (!order || order.customerNumber !== ctx.session.user.id) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Order not found",
@@ -266,13 +266,13 @@ export const orderRouter = router({
         },
       });
     }),
-    updateOrderStatus: protectedProcedure
+  updateOrderStatus: protectedProcedure
     .input(
       z.object({
         orderNumber: z.string().cuid(),
-        status: z.nativeEnum(OrderStatus,{
+        status: z.nativeEnum(OrderStatus, {
           invalid_type_error: "Size must be ClothSize",
-        })
+        }),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -285,7 +285,7 @@ export const orderRouter = router({
           customerNumber: true,
         },
       });
-      if (!order || order.customerNumber !== ctx.session.user.id ) {
+      if (!order || order.customerNumber !== ctx.session.user.id) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Order not found",
@@ -300,12 +300,12 @@ export const orderRouter = router({
         },
       });
     }),
-    updateOrderInProcess: protectedProcedure
+  updateOrderInProcess: protectedProcedure
     .input(
       z.object({
         orderNumber: z.string().cuid(),
-        shipperName:  z.string(),
-        shipperPhone:  z.string(),
+        shipperName: z.string(),
+        shipperPhone: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -318,7 +318,7 @@ export const orderRouter = router({
           customerNumber: true,
         },
       });
-      if (!order || order.customerNumber !== ctx.session.user.id ) {
+      if (!order || order.customerNumber !== ctx.session.user.id) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Order not found",
@@ -331,11 +331,11 @@ export const orderRouter = router({
         data: {
           status: OrderStatus.INPROCESS,
           shipperName: input.shipperName,
-          shipperPhone: input.shipperPhone
+          shipperPhone: input.shipperPhone,
         },
       });
     }),
-    ReturnOrder: protectedProcedure
+  returnOrder: protectedProcedure
     .input(
       z.object({
         orderNumber: z.string().cuid(),
@@ -358,16 +358,15 @@ export const orderRouter = router({
       if (order.customerNumber !== ctx.session.user.id) {
         throw new Error("Order not found");
       }
-    
-        return ctx.prisma.order.update({
-          where: {
-            orderNumber: input.orderNumber,
-          },
-          data: {
-            status: OrderStatus.RETURN_PENDING,
-            cancelReason: input.cancelReason,
-          },
-        });
-    
+
+      return ctx.prisma.order.update({
+        where: {
+          orderNumber: input.orderNumber,
+        },
+        data: {
+          status: OrderStatus.RETURN_PENDING,
+          cancelReason: input.cancelReason,
+        },
+      });
     }),
 });

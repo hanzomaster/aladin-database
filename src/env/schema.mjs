@@ -7,6 +7,7 @@ import { z } from "zod";
  */
 export const serverSchema = z.object({
   DATABASE_URL: z.string().url(),
+  SLAVE_DATABASE_URl: z.string().url(),
   NODE_ENV: z.enum(["development", "test", "production"]),
   NEXTAUTH_SECRET: z.string(),
   NEXTAUTH_URL: z.preprocess(
@@ -36,6 +37,9 @@ export const serverSchema = z.object({
   S3_UPLOAD_REGION: z.string(),
   NEXT_PUBLIC_STRIPE_API_KEY: z.string(),
   STRIPE_SECRET_KEY: z.string(),
+  MEILISEARCH_HOST: z.string().url(),
+  MEILISEARCH_KEY: z.string(),
+  REDIS_URL: z.string().url(),
 });
 
 /**

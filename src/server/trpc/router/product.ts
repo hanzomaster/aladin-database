@@ -1,4 +1,5 @@
 import { z } from "zod";
+import meilisearchClient from "../../../utils/meilisearch";
 import { adminProcedure, protectedProcedure, publicProcedure, router } from "../trpc";
 import {
   createProductSchema,
@@ -6,9 +7,13 @@ import {
   getManyProductSchema,
   updateProductSchema,
 } from "./dto";
+import { MeiliSearchApiError } from "meilisearch";
+import { TRPCError } from "@trpc/server";
+import { Gender, Prisma, Product, ProductDetail, ProductInStock } from "@prisma/client";
+import redisClient from "@utils/redis";
 
 export const productRouter = router({
-  count: publicProcedure.query(({ ctx }) => ctx.prisma.product.count()),
+  count: publicProcedure.query(({ ctx }) => ctx.slavePrisma.product.count()),
   search: publicProcedure
     .input(
       z.object({
@@ -21,15 +26,106 @@ export const productRouter = router({
           .optional(),
       })
     )
-    .query(({ ctx, input }) =>
-      ctx.prisma.product.findMany({
-        where: {
-          name: {
-            contains: input.name,
+    .query(async ({ ctx, input }) => {
+      try {
+        const index = await meilisearchClient.getIndex("products");
+        const searchResult = await index.search(input.name, {
+          limit: input.option?.take,
+          offset: input.option?.skip,
+        });
+        const productNames = searchResult.hits.map((hit) => hit.name);
+        return ctx.slavePrisma.product.findMany({
+          where: {
+            name: {
+              in: productNames,
+            },
           },
+          skip: input.option?.skip,
+          take: input.option?.take,
+          include: {
+            line: {
+              select: {
+                type: true,
+                gender: true,
+                textDescription: true,
+                htmlDescription: true,
+              },
+            },
+            _count: true,
+            productDetail: {
+              include: {
+                productInStock: {
+                  select: {
+                    size: true,
+                    quantity: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+      } catch (err) {
+        if (err instanceof MeiliSearchApiError) {
+          return ctx.slavePrisma.product.findMany({
+            where: {
+              name: {
+                contains: input.name,
+              },
+            },
+            skip: input.option?.skip,
+            take: input.option?.take,
+            include: {
+              line: {
+                select: {
+                  type: true,
+                  gender: true,
+                  textDescription: true,
+                  htmlDescription: true,
+                },
+              },
+              _count: true,
+              productDetail: {
+                include: {
+                  productInStock: {
+                    select: {
+                      size: true,
+                      quantity: true,
+                    },
+                  },
+                },
+              },
+            },
+          });
+        } else {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Something went wrong",
+          });
+        }
+      }
+    }),
+  getAll: publicProcedure.input(getAllSchema).query(async ({ ctx, input }) => {
+    try {
+      const cacheResult = await redisClient.get("products");
+      if (cacheResult) {
+        return (await JSON.parse(cacheResult)) as (Product & {
+          productDetail: (ProductDetail & {
+            productInStock: ProductInStock[];
+          })[];
+          line: {
+            type: string;
+            gender: Gender;
+            textDescription: string | null;
+            htmlDescription: string | null;
+          };
+        })[];
+      }
+      const result = await ctx.slavePrisma.product.findMany({
+        skip: input?.skip,
+        take: input?.take,
+        where: {
+          onSale: true,
         },
-        skip: input.option?.skip,
-        take: input.option?.take,
         include: {
           line: {
             select: {
@@ -39,44 +135,22 @@ export const productRouter = router({
               htmlDescription: true,
             },
           },
-          _count: true,
           productDetail: {
             include: {
-              productInStock: {
-                select: {
-                  size: true,
-                  quantity: true,
-                },
-              },
+              productInStock: true,
             },
           },
         },
-      })
-    ),
-  getAll: publicProcedure.input(getAllSchema).query(({ ctx, input }) =>
-    ctx.prisma.product.findMany({
-      skip: input?.skip,
-      take: input?.take,
-      where: {
-        onSale: true,
-      },
-      include: {
-        line: {
-          select: {
-            type: true,
-            gender: true,
-            textDescription: true,
-            htmlDescription: true,
-          },
-        },
-        productDetail: {
-          include: {
-            productInStock: true
-          }
-        },
-      },
-    })
-  ),
+      });
+      redisClient.set("products", JSON.stringify(result));
+      return result;
+    } catch (err) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Something went wrong",
+      });
+    }
+  }),
   getOneWhere: publicProcedure
     .input(
       z.object({
@@ -84,7 +158,7 @@ export const productRouter = router({
       })
     )
     .query(({ ctx, input }) =>
-      ctx.prisma.product.findUnique({
+      ctx.slavePrisma.product.findUnique({
         where: input,
         include: {
           line: {
@@ -109,7 +183,7 @@ export const productRouter = router({
       })
     ),
   getManyWhere: publicProcedure.input(getManyProductSchema).query(({ ctx, input }) =>
-    ctx.prisma.product.findMany({
+    ctx.slavePrisma.product.findMany({
       where: {
         name: input.name,
         description: input.description,

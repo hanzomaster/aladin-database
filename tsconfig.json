@@ -22,7 +22,10 @@
     "paths": {
       "@db/*": [
         "./src/server/db/*"
-      ]
+      ],
+      "@utils/*": [
+        "./src/utils/*"
+      ],
     }
   },
   "include": [

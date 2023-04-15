@@ -5,7 +5,7 @@ import Link from "next/link";
 import NavBar from "../components/navbar";
 import SidebarAccount from "../components/user/SidebarAccount";
 
-import { trpc } from "../utils/trpc";
+import { trpc } from "@utils/trpc";
 export const getServerSideProps: GetServerSideProps = async (
   context: GetServerSidePropsContext
 ) => {
@@ -67,7 +67,7 @@ const Purchase: NextPage = () => {
                                   ? item.orderdetail[0]?.productDetail.image
                                   : ""
                               }
-                              layout="fill"
+                              fill
                               alt="Ảnh sản phẩm"
                               className="object-cover object-center"></Image>
                             {/* <img

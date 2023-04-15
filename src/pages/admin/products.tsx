@@ -3,7 +3,7 @@ import { NextPage } from "next";
 import { useEffect, useState } from "react";
 import Pagination from "../../components/Pagination";
 import { AppRouter } from "../../server/trpc/router/_app";
-import { trpc } from "../../utils/trpc";
+import { trpc } from "@utils/trpc";
 
 import NavbarAdmin from "../../components/admin/NavbarAdmin";
 import ProductsList from "../../components/admin/ProductsList";

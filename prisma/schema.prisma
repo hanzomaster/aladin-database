@@ -65,22 +65,12 @@ model Product {
     onSale          Boolean         @default(true)
     stopSellingFrom DateTime?
     productDetail   ProductDetail[]
+    indexed         Boolean         @default(false)
 
     line ProductLine @relation(fields: [productLine], references: [id], onDelete: Cascade)
 
     @@fulltext([name])
     @@map("products")
-}
-
-model ProductInStock {
-    productDetailId String
-    quantity        Int
-    size            ClothSize
-
-    productDetail ProductDetail @relation(fields: [productDetailId], references: [id], onDelete: Cascade)
-
-    @@id([productDetailId, size])
-    @@map("product_in_stock")
 }
 
 model ProductDetail {
@@ -97,6 +87,17 @@ model ProductDetail {
 
     @@unique([productCode, colorCode])
     @@map("product_details")
+}
+
+model ProductInStock {
+    productDetailId String
+    quantity        Int
+    size            ClothSize
+
+    productDetail ProductDetail @relation(fields: [productDetailId], references: [id], onDelete: Cascade)
+
+    @@id([productDetailId, size])
+    @@map("product_in_stock")
 }
 
 model ProductLine {

@@ -8,7 +8,7 @@ function OrderedItem({ item, disable }: { item: any; disable: boolean }) {
         <div className="relative h-full w-full"></div>
         <Image
           src={item.productDetail.image ? item.productDetail.image : ""}
-          layout="fill"
+          fill
           alt="Ảnh sản phẩm"
           priority={true}
           className="object-cover object-center"></Image>

@@ -9,7 +9,7 @@ import {
 
 export const productDetailRouter = router({
   getAll: publicProcedure.input(getAllSchema).query(({ ctx, input }) =>
-    ctx.prisma.productDetail.findMany({
+    ctx.slavePrisma.productDetail.findMany({
       skip: input?.skip,
       take: input?.take,
     })
@@ -21,7 +21,7 @@ export const productDetailRouter = router({
       })
     )
     .query(({ ctx, input }) =>
-      ctx.prisma.productDetail.findMany({
+      ctx.slavePrisma.productDetail.findMany({
         where: {
           productCode: input.productCode,
         },
@@ -37,7 +37,7 @@ export const productDetailRouter = router({
       })
     )
     .query(({ ctx, input }) =>
-      ctx.prisma.productDetail.findUnique({
+      ctx.slavePrisma.productDetail.findUnique({
         where: {
           id: input.id,
         },

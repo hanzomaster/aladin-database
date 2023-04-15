@@ -8,8 +8,8 @@ import Select from "react-select";
 import { useToast } from "../components/Toast";
 import NavBar from "../components/navbar";
 import useLocationForm from "../constants/useLocationForm";
-import { checkout } from "../utils/checkout";
-import { trpc } from "../utils/trpc";
+import { checkout } from "@utils/checkout";
+import { trpc } from "@utils/trpc";
 
 const CheckOut = () => {
   const { state, onCitySelect, onDistrictSelect, onWardSelect } = useLocationForm(false);
@@ -424,7 +424,7 @@ const CheckOut = () => {
                               <div className="relative h-full w-full">
                                 <Image
                                   src={product?.productDetail?.image}
-                                  layout="fill"
+                                  fill
                                   alt="Ảnh sản phẩm"
                                   className=" object-cover object-center"
                                   priority={true}

@@ -6,7 +6,7 @@ import NavbarAdmin from "../../components/admin/NavbarAdmin";
 import { getAmountOrder } from "../../components/admin/OrdersList";
 import { env } from "../../env/server.mjs";
 import { AppRouter } from "../../server/trpc/router/_app";
-import { trpc } from "../../utils/trpc";
+import { trpc } from "@utils/trpc";
 import Link from "next/link";
 
 function getSumAmountOrders(orders: inferRouterOutputs<AppRouter>["order"]["getAll"]) {

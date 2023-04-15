@@ -2,7 +2,7 @@ import { inferRouterOutputs } from "@trpc/server";
 import { useSession } from "next-auth/react";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { AppRouter } from "../server/trpc/router/_app";
-import { trpc } from "../utils/trpc";
+import { trpc } from "@utils/trpc";
 
 type CartContextType = {
   cart: { data: inferRouterOutputs<AppRouter>["cart"]["get"] | undefined; loading: boolean };
