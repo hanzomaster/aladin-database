@@ -13,7 +13,7 @@ import { ProductLine } from "@prisma/client";
 export const productLineRouter = router({
   getAll: publicProcedure.input(getAllSchema).query(async ({ ctx, input }) => {
     try {
-      const cacheResult = await redisClient.get("products");
+      const cacheResult = await redisClient.get("productLines");
       if (cacheResult) {
         return (await JSON.parse(cacheResult)) as ProductLine[];
       }

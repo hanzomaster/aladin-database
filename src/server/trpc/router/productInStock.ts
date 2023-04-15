@@ -7,7 +7,7 @@ import redisClient from "@utils/redis";
 export const productInStockRouter = router({
   getManyWhere: publicProcedure.input(getManyProductInStockSchema).query(async ({ ctx, input }) => {
     try {
-      const cacheResult = await redisClient.get("products");
+      const cacheResult = await redisClient.get("productsInStock." + input.productDetailId);
       if (cacheResult) {
         return (await JSON.parse(cacheResult)) as ProductInStock[];
       }

@@ -19,18 +19,20 @@ export default async function indexProducts(req: NextApiRequest, res: NextApiRes
       code: true,
     },
   });
-  let ids = removeIndex.map((product) => product.code);
-  productIndex.deleteDocuments(ids);
-  masterPrisma.product.updateMany({
-    where: {
-      code: {
-        in: ids,
+  if (removeIndex.length > 0) {
+    const ids = removeIndex.map((product) => product.code);
+    productIndex.deleteDocuments(ids);
+    masterPrisma.product.updateMany({
+      where: {
+        code: {
+          in: ids,
+        },
       },
-    },
-    data: {
-      indexed: false,
-    },
-  });
+      data: {
+        indexed: false,
+      },
+    });
+  }
   // add index to products that on sale and not indexed
   const unIndexedProducts = await masterPrisma.product.findMany({
     where: {
@@ -43,21 +45,23 @@ export default async function indexProducts(req: NextApiRequest, res: NextApiRes
     },
     take: 1000,
   });
-  productIndex.addDocuments(unIndexedProducts, {
-    primaryKey: "code",
-  });
-  // update indexed to true for unIndexedProducts
-  ids = unIndexedProducts.map((product) => product.code);
-  masterPrisma.product.updateMany({
-    where: {
-      code: {
-        in: ids,
+  if (unIndexedProducts.length > 0) {
+    productIndex.addDocuments(unIndexedProducts, {
+      primaryKey: "code",
+    });
+    // update indexed to true for unIndexedProducts
+    const ids = unIndexedProducts.map((product) => product.code);
+    masterPrisma.product.updateMany({
+      where: {
+        code: {
+          in: ids,
+        },
       },
-    },
-    data: {
-      indexed: true,
-    },
-  });
+      data: {
+        indexed: true,
+      },
+    });
+  }
   const result = await productIndex.getDocuments();
   res.json(result.results);
 }
