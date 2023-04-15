@@ -1,8 +1,8 @@
 import { ClothSize, ProductInStock } from "@prisma/client";
-import { publicProcedure, router } from "../trpc";
-import { getManyProductInStockSchema } from "./dto";
 import { TRPCError } from "@trpc/server";
 import redisClient from "@utils/redis";
+import { adminProcedure, publicProcedure, router } from "../trpc";
+import { getManyProductInStockSchema, updateStockSchema } from "./dto";
 
 export const productInStockRouter = router({
   getManyWhere: publicProcedure.input(getManyProductInStockSchema).query(async ({ ctx, input }) => {
@@ -32,6 +32,19 @@ export const productInStockRouter = router({
           productDetailId: input.productDetailId as string,
           size: input.size as ClothSize,
         },
+      },
+    })
+  ),
+  update: adminProcedure.input(updateStockSchema).mutation(async ({ ctx, input }) =>
+    ctx.prisma.productInStock.update({
+      where: {
+        productDetailId_size: {
+          productDetailId: input.productDetailId,
+          size: input.size
+        }
+      },
+      data: {
+       quantity: input.quantity,
       },
     })
   ),

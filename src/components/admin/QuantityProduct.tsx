@@ -1,6 +1,8 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { ClothSize, ProductDetail } from "@prisma/client";
-import { Fragment, useState } from "react";
+import { trpc } from "@utils/trpc";
+import { ChangeEvent, Fragment, useState } from "react";
+import { useToast } from "../Toast";
 
 function QuantityProduct({
   productDetail,
@@ -12,9 +14,25 @@ function QuantityProduct({
     }[];
   })[];
 }) {
+  const { add: toast } = useToast();
+  const mutation = trpc.productInStock.update.useMutation({
+    onSuccess: () => {
+      toast({
+        type: "success",
+        duration: 6000,
+        message: "Chỉnh sửa thành công",
+        position: "topCenter",
+      });
+      setUpdateList([]);
+      setIsUpdate(false);
+      setIsOpen(false);
+    },
+  });
   // console.log(productDetail[0].productCode);
   // console.log(productCode);
-
+  const [updateList, setUpdateList] = useState<
+    { productDetailId: string; size: ClothSize; quantityUpdated: number }[]
+  >([]);
   const [isOpen, setIsOpen] = useState(false);
 
   function closeModal() {
@@ -26,11 +44,34 @@ function QuantityProduct({
     setIsOpen(true);
   }
 
+  const [message, setMessage] = useState(0);
+
+  const handleChange = (
+    event: ChangeEvent<HTMLInputElement>,
+    size: ClothSize,
+    productDetailId: string
+  ) => {
+    const cloneArr = [...updateList];
+    for (const item of cloneArr) {
+      if (item.productDetailId === productDetailId && item.size === size) {
+        item.quantityUpdated = parseInt(event.target.value);
+      }
+    }
+    setUpdateList(cloneArr);
+    setMessage(Number(event.target.value));
+  };
+
   const [isUpdate, setIsUpdate] = useState(false);
   const handleUpdate = () => {
-    setIsUpdate(false);
-    setIsOpen(false);
+    for (const item of updateList) {
+      mutation.mutate({
+        productDetailId: item.productDetailId,
+        size: item.size,
+        quantity: item.quantityUpdated,
+      });
+    }
   };
+  const tempArr = [...updateList];
   return (
     <div>
       <button className="text-[#0070f3] hover:text-[#0070f3]/80" onClick={openModal}>
@@ -63,7 +104,6 @@ function QuantityProduct({
                   <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
                     Số lượng sản phẩm
                   </Dialog.Title>
-
                   <table>
                     <thead>
                       <tr className="border-b bg-white text-sm transition duration-300 ease-in-out hover:bg-gray-100 md:text-base">
@@ -95,29 +135,48 @@ function QuantityProduct({
                       </tr>
                     </thead>
                     <tbody>
-                      {productDetail?.map((item, index) => (
-                        <tr
-                          key={index}
-                          className="border-b bg-white text-sm transition duration-300 ease-in-out hover:bg-gray-100 md:text-base">
-                          <td className="whitespace-nowrap px-1 py-3 md:px-4">{item.colorCode}</td>
-                          {item?.productInStock?.map((item, index) => (
-                            <td key={index} className="whitespace-nowrap px-1 py-3 md:px-4">
-                              {/* {item.quantity} */}
-                              <input
-                                type="number"
-                                className="h-8 w-14 rounded-md border border-gray-300 px-1"
-                                defaultValue={item.quantity}
-                                disabled={!isUpdate}
-                                onChange={(e) => {
-                                  console.log(e.target.value);
-                                }}
-                              />
+                      {productDetail?.map((item1, index) => {
+                        return (
+                          <tr
+                            key={index}
+                            className="border-b bg-white text-sm transition duration-300 ease-in-out hover:bg-gray-100 md:text-base">
+                            <td className="whitespace-nowrap px-1 py-3 md:px-4">
+                              {item1.colorCode}
                             </td>
-                          ))}
-                        </tr>
-                      ))}
+                            {item1?.productInStock?.map((item, index) => {
+                              tempArr.push({
+                                productDetailId: item1.id as string,
+                                size: item.size,
+                                quantityUpdated: Number(item.quantity),
+                              });
+                              return (
+                                <td key={index} className="whitespace-nowrap px-1 py-3 md:px-4">
+                                  {/* {item.quantity} */}
+                                  <input
+                                    type="number"
+                                    className="h-8 w-14 rounded-md border border-gray-300 px-1"
+                                    defaultValue={item.quantity}
+                                    disabled={!isUpdate}
+                                    onChange={(e) => {
+                                      handleChange(e, item.size, item1.id);
+                                      console.log(e.target.value);
+                                    }}
+                                  />
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
+                  <div>
+                    {updateList.map((item, index) => (
+                      <p key={index}>
+                        {item.productDetailId + " " + item.quantityUpdated + " " + item.size}
+                      </p>
+                    ))}
+                  </div>
 
                   <div className="mt-4 flex justify-between">
                     {isUpdate ? (
@@ -131,7 +190,10 @@ function QuantityProduct({
                       <button
                         type="button"
                         className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 hover:bg-blue-200"
-                        onClick={() => setIsUpdate(true)}>
+                        onClick={() => {
+                          setIsUpdate(true);
+                          setUpdateList(tempArr);
+                        }}>
                         Cập nhật
                       </button>
                     )}

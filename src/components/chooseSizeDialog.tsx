@@ -1,8 +1,8 @@
 import { Dialog, RadioGroup, Transition } from "@headlessui/react";
 import { ClothSize } from "@prisma/client";
+import { trpc } from "@utils/trpc";
 import { useSession } from "next-auth/react";
 import { Fragment, useState } from "react";
-import { trpc } from "@utils/trpc";
 import { useToast } from "./Toast";
 
 function classNames(...classes: string[]) {
@@ -12,9 +12,13 @@ function classNames(...classes: string[]) {
 const ChooseSize = ({
   productDetailId,
   productName,
+  productInStockList,
+  color,
 }: {
   productDetailId: string;
   productName: string;
+  productInStockList: any;
+  color: string;
 }) => {
   // console.log(productDetail[0].productCode);
   // console.log(productCode);
@@ -24,9 +28,6 @@ const ChooseSize = ({
   const { data: sessionData } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedSize, setSelectedSize] = useState<ClothSizeLiteral>(ClothSize.L);
-  const { data: stockData } = trpc.productInStock.getManyWhere.useQuery({
-    productDetailId: productDetailId,
-  });
   const mutation = trpc.cartItem.updateOrCreate.useMutation({
     onSuccess: () => {
       toast({
@@ -89,7 +90,13 @@ const ChooseSize = ({
                 leaveTo="opacity-0 scale-95">
                 <Dialog.Panel className="w-full max-w-md transform items-center overflow-hidden rounded-2xl bg-white p-6 text-center align-middle shadow-xl transition-all">
                   <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                    Chọn size sản phẩm {productName}
+                    Chọn size sản phẩm {productName}{" "}
+                    <span
+                      style={{
+                        background: `#${color}`,
+                      }}>
+                      {color}
+                    </span>
                   </Dialog.Title>
 
                   <RadioGroup
@@ -98,7 +105,7 @@ const ChooseSize = ({
                     className="inset-x-0 mt-4 items-center justify-center">
                     <RadioGroup.Label className="sr-only">Choose a size</RadioGroup.Label>
                     <div className="grid w-full grid-cols-4 items-center gap-4">
-                      {stockData?.map((productInStock) => (
+                      {productInStockList?.map((productInStock) => (
                         <div key={productInStock.size} className="flex flex-col">
                           <RadioGroup.Option
                             value={productInStock.size}

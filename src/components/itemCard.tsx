@@ -17,6 +17,7 @@ export default function ItemCard({ item }: { item: any }) {
   const [selectedColor, setSelectedColor] = useState(item.productDetail[0]?.colorCode);
   const [selectedImage, setSelectedImage] = useState(item.productDetail[0]?.image);
   const [selectedId, setSelectedId] = useState(item.productDetail[0]?.id as string);
+  const [selectedStock, setSelectedStock] = useState(item.productDetail[0].productInStock);
   const { data: sessionData } = useSession();
   const { add: toast } = useToast();
 
@@ -55,6 +56,7 @@ export default function ItemCard({ item }: { item: any }) {
       if (product1.colorCode === color) {
         setSelectedImage(product1.image);
         setSelectedId(product1.id);
+        setSelectedStock(product1.productInStock);
       }
     }
   };
@@ -75,6 +77,8 @@ export default function ItemCard({ item }: { item: any }) {
           <ChooseSize
             productDetailId={selectedId ? selectedId : item.productDetail[0]?.id}
             productName={item.name}
+            productInStockList={selectedStock}
+            color={selectedColor}
           />
         </div>
         <h2 className="mr-18 ml-2 mt-3 truncate text-2xl text-xl capitalize hover:text-red-500">
