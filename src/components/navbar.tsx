@@ -11,6 +11,7 @@ import { useCart } from "../context/CartContext";
 import { trpc } from "@utils/trpc";
 import CartItem from "./cartItem";
 import DropdownComponent from "./dropdownmenu";
+import { masterPrisma } from "@db/client";
 
 const price = [
   { value: "price1", label: "Dưới 100.000đ" },
@@ -49,6 +50,15 @@ const NavBar = () => {
     if (event.key === "Enter") {
       window.location.href = "/home?name=" + message;
     }
+  };
+
+  const getTotal = () => {
+    const cartId = cart?.data?.id;
+    const query = 'total_cart(' + cartId + ')';
+    (masterPrisma.$queryRaw<number>`SELECT ${query}`).then((result) => {
+      console.error(typeof result)
+      return result;
+    });
   };
 
   return (
