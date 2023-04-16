@@ -56,7 +56,7 @@ const Account: NextPage = () => {
       </section>
 
       {/* Content */}
-      <div className=" p- mx-1 gap-5 py-10">
+      <div className="mx-1 gap-5 py-10">
         <div className="mt-10 flex h-full px-4 pb-20 lg:px-10">
           <SidebarAccount />
           {/* main */}

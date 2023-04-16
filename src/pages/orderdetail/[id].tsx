@@ -83,7 +83,7 @@ const OrderDetail = () => {
       <Navbar />
 
       <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css" />
-      <div className="p- p- mx-1 px-4 py-20 2xl:container md:px-6 2xl:mx-auto 2xl:px-20">
+      <div className="mx-1 px-4 py-20 2xl:container md:px-6 2xl:mx-auto 2xl:px-20">
         <div className="item-start flex flex-col justify-start space-y-2 ">
           <h1 className="text-3xl font-semibold leading-7 text-gray-800 lg:text-4xl  lg:leading-9">
             Đơn hàng {id}

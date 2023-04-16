@@ -7,7 +7,7 @@ const ProductsList = ({
   productsData: inferRouterOutputs<AppRouter>["product"]["getAll"] | undefined;
 }) => {
   return (
-    <div className=" p- mb-10 h-full w-full">
+    <div className="mb-10 h-full w-full">
       <table className="w-full">
         <thead className="border-b bg-white">
           <tr>

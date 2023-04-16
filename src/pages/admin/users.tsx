@@ -48,7 +48,7 @@ const Users: NextPage = () => {
   return (
     <div className="h-full w-full text-sm md:text-base">
       <NavbarAdmin />
-      <main className=" p- px-5 py-10 md:px-10 lg:px-20">
+      <main className="px-5 py-10 md:px-10 lg:px-20">
         <h1 className="text-3xl font-medium text-gray-900 ">Users</h1>
         <Searchbar placeholder="Search by user email" handleChange={handleChange} />
         <UsersList usersData={currentPosts ?? []} handleActive={handleActive} />

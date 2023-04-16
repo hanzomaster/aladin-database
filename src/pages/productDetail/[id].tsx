@@ -102,7 +102,7 @@ const ProductDetail: NextPage = () => {
       <section>
         <NavBar />
       </section>
-      <section className=" p- mx-1 gap-5 py-10">
+      <section className="mx-1 gap-5 py-10">
         <div className="inset-0">
           <div className="mx-auto my-0 max-h-full w-3/4 bg-white">
             <div className="mt-10 flex w-full items-center overflow-hidden bg-white px-4 pt-14 pb-8  sm:px-6 sm:pt-8 md:p-6 lg:p-8">

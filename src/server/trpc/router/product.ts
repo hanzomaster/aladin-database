@@ -9,7 +9,7 @@ import {
 } from "./dto";
 import { MeiliSearchApiError } from "meilisearch";
 import { TRPCError } from "@trpc/server";
-import { Gender, Prisma, Product, ProductDetail, ProductInStock } from "@prisma/client";
+import { Gender, Product, ProductDetail, ProductInStock } from "@prisma/client";
 import redisClient from "@utils/redis";
 
 export const productRouter = router({

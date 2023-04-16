@@ -37,6 +37,7 @@ export const productInStockRouter = router({
   ),
   update: adminProcedure.input(updateStockSchema).mutation(async ({ ctx, input }) => {
     redisClient.del("productsInStock." + input.productDetailId);
+    redisClient.del("products");
     return ctx.prisma.productInStock.update({
       where: {
         productDetailId_size: {

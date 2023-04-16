@@ -41,7 +41,7 @@ const Products = () => {
           </div>
         </section>
 
-        <section className=" p- -z-10 mx-1 grid gap-5 py-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:px-20">
+        <section className="z-10 mx-1 grid gap-5 py-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:px-20">
           {data?.map((item) => {
             return <ItemCard key={item.code} item={item} />;
           })}
@@ -69,7 +69,7 @@ const Products = () => {
         <section>
           <NavBar />
         </section>
-        <section className=" p- mx-1 grid gap-5 py-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:px-20">
+        <section className="mx-1 grid gap-5 py-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:px-20">
           <div className="col-span-6 block">
             <p className=" mt-10 text-xl font-bold sm:text-3xl">
               Kết quả cho: {name} - Giới tính: {gender === "male" ? "Nam" : "Nữ"}
@@ -77,7 +77,7 @@ const Products = () => {
           </div>
         </section>
 
-        <section className=" p- -z-10 mx-1 grid gap-5 py-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:px-20">
+        <section className="z-10 mx-1 grid gap-5 py-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:px-20">
           {data?.map((item) => {
             return <ItemCard key={item.code} item={item} />;
             // }
@@ -105,7 +105,7 @@ const Products = () => {
           <NavBar />
         </section>
 
-        <section className=" p- mx-1 grid gap-5 py-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:px-20">
+        <section className="mx-1 grid gap-5 py-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:px-20">
           <img
             className="col-span-6 row-span-1 mt-10 hidden sm:block"
             src="/banner.jpg"
@@ -115,7 +115,7 @@ const Products = () => {
           </div>
         </section>
 
-        <section className=" p- -z-10 mx-1 grid gap-5 py-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:px-20">
+        <section className="z-10 mx-1 grid gap-5 py-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:px-20">
           {/* <img className='col-span-6 row-span-1' src="banner.jpg" alt='Quảng cáo'></img> */}
 
           {currentPosts?.map((item) => {

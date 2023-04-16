@@ -1,6 +1,7 @@
 import { Theme } from "next-auth";
 import { createTransport } from "nodemailer";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function CustomsendVerificationRequest(params: any) {
   const { identifier, url, provider, theme } = params;
   const { host } = new URL(url);
