@@ -8,11 +8,11 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useState } from "react";
 
+import { inferRouterOutputs } from "@trpc/server";
 import { trpc } from "@utils/trpc";
+import { AppRouter } from "../server/trpc/router/_app";
 import { useToast } from "./Toast";
 import ChooseSize from "./chooseSizeDialog";
-import { inferRouterOutputs } from "@trpc/server";
-import { AppRouter } from "../server/trpc/router/_app";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
@@ -84,10 +84,10 @@ export default function ItemCard({
               priority={true}></Image>
           </div>
           <ChooseSize
-            productDetailId={selectedId ? selectedId : item.productDetail[0]!.id}
+            productDetailId={selectedId ? selectedId : (item.productDetail[0]?.id as string)}
             productName={item.name}
             productInStockList={selectedStock}
-            color={selectedColor ? selectedColor : item.productDetail[0]!.colorCode}
+            color={selectedColor ? selectedColor : (item.productDetail[0]?.colorCode as string)}
           />
         </div>
         <h2 className="mr-18 ml-2 mt-3 truncate text-xl capitalize hover:text-red-500">

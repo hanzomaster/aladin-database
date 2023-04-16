@@ -33,6 +33,9 @@ const ChooseSize = ({
   const { data: sessionData } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedSize, setSelectedSize] = useState<ClothSizeLiteral>(ClothSize.L);
+  const { data: stockData } = trpc.productInStock.getManyWhere.useQuery({
+    productDetailId: productDetailId,
+  });
   const mutation = trpc.cartItem.updateOrCreate.useMutation({
     onSuccess: () => {
       toast({
@@ -110,7 +113,7 @@ const ChooseSize = ({
                     className="inset-x-0 mt-4 items-center justify-center">
                     <RadioGroup.Label className="sr-only">Choose a size</RadioGroup.Label>
                     <div className="grid w-full grid-cols-4 items-center gap-4">
-                      {productInStockList?.map((productInStock) => (
+                      {stockData?.map((productInStock) => (
                         <div key={productInStock.size} className="flex flex-col">
                           <RadioGroup.Option
                             value={productInStock.size}

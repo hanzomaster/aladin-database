@@ -1,4 +1,5 @@
 import { inferRouterOutputs } from "@trpc/server";
+import { trpc } from "@utils/trpc";
 import { AppRouter } from "../../server/trpc/router/_app";
 import QuantityProduct from "./QuantityProduct";
 const ProductsList = ({
@@ -6,6 +7,10 @@ const ProductsList = ({
 }: {
   productsData: inferRouterOutputs<AppRouter>["product"]["getAll"] | undefined;
 }) => {
+  const mutation = trpc.product.removeFromStock.useMutation();
+  function handleRemove(id: string) {
+    mutation.mutate({ code: id });
+  }
   return (
     <div className="mb-10 h-full w-full">
       <table className="w-full">
@@ -66,7 +71,9 @@ const ProductsList = ({
                   {product.line?.gender == "M" ? "Nam" : "Nữ"}
                 </td>
                 <td className="whitespace-nowrap px-2 py-3 md:px-6">{product.line?.type}</td>
-                <td className="whitespace-nowrap px-2 py-3 md:px-6">{product.name}</td>
+                <td className="whitespace-nowrap px-2 py-3 md:px-6">
+                  {product.name} {product.onSale ? " (Y)" : " (N)"}
+                </td>
 
                 <td className="whitespace-nowrap px-2 py-3 md:px-6">
                   {product.buyPrice.toString()}
@@ -76,7 +83,9 @@ const ProductsList = ({
                   <QuantityProduct productDetail={product.productDetail} />
                 </td>
                 <td className="whitespace-nowrap px-2 py-3 md:px-6">
-                  <button className="rounded-md bg-red-500 text-white">
+                  <button
+                    className="rounded-md bg-red-500 text-white"
+                    onClick={() => handleRemove(product.code)}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
