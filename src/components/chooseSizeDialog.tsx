@@ -17,7 +17,12 @@ const ChooseSize = ({
 }: {
   productDetailId: string;
   productName: string;
-  productInStockList: any;
+  productInStockList:
+    | {
+        quantity: number;
+        size: ClothSize;
+      }[]
+    | undefined;
   color: string;
 }) => {
   // console.log(productDetail[0].productCode);

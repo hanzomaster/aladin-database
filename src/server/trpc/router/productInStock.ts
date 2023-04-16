@@ -35,17 +35,18 @@ export const productInStockRouter = router({
       },
     })
   ),
-  update: adminProcedure.input(updateStockSchema).mutation(async ({ ctx, input }) =>
-    ctx.prisma.productInStock.update({
+  update: adminProcedure.input(updateStockSchema).mutation(async ({ ctx, input }) => {
+    redisClient.del("productsInStock." + input.productDetailId);
+    return ctx.prisma.productInStock.update({
       where: {
         productDetailId_size: {
           productDetailId: input.productDetailId,
-          size: input.size
-        }
+          size: input.size,
+        },
       },
       data: {
-       quantity: input.quantity,
+        quantity: input.quantity,
       },
-    })
-  ),
+    });
+  }),
 });

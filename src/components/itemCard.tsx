@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 // import { BsHeart } from 'react-icons/bs'
 // import data from ".//product";
 import { RadioGroup } from "@headlessui/react";
@@ -9,15 +11,22 @@ import { useState } from "react";
 import { trpc } from "@utils/trpc";
 import { useToast } from "./Toast";
 import ChooseSize from "./chooseSizeDialog";
+import { inferRouterOutputs } from "@trpc/server";
+import { AppRouter } from "../server/trpc/router/_app";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
-export default function ItemCard({ item }: { item: any }) {
+export default function ItemCard({
+  item,
+}: {
+  item: inferRouterOutputs<AppRouter>["product"]["search"][number];
+}) {
   const utils = trpc.useContext();
   const [selectedColor, setSelectedColor] = useState(item.productDetail[0]?.colorCode);
   const [selectedImage, setSelectedImage] = useState(item.productDetail[0]?.image);
   const [selectedId, setSelectedId] = useState(item.productDetail[0]?.id as string);
-  const [selectedStock, setSelectedStock] = useState(item.productDetail[0].productInStock);
+  const [selectedStock, setSelectedStock] = useState(item.productDetail[0]?.productInStock);
   const { data: sessionData } = useSession();
   const { add: toast } = useToast();
 
@@ -68,20 +77,20 @@ export default function ItemCard({ item }: { item: any }) {
         <div className="relative overflow-hidden">
           <div className="h-96 w-full">
             <Image
-              src={selectedImage ? selectedImage : item.productDetail[0]?.image}
+              src={selectedImage ? selectedImage : item.productDetail[0]!.image}
               fill
               className="object-cover"
               alt="Image"
               priority={true}></Image>
           </div>
           <ChooseSize
-            productDetailId={selectedId ? selectedId : item.productDetail[0]?.id}
+            productDetailId={selectedId ? selectedId : item.productDetail[0]!.id}
             productName={item.name}
             productInStockList={selectedStock}
-            color={selectedColor}
+            color={selectedColor ? selectedColor : item.productDetail[0]!.colorCode}
           />
         </div>
-        <h2 className="mr-18 ml-2 mt-3 truncate text-2xl text-xl capitalize hover:text-red-500">
+        <h2 className="mr-18 ml-2 mt-3 truncate text-xl capitalize hover:text-red-500">
           <a href={"/productDetail/" + item.code}>
             {item.name} &#40;{item.line.gender}&#41;
           </a>
@@ -109,7 +118,7 @@ export default function ItemCard({ item }: { item: any }) {
                     onClick={() => handleChooseColor(item1.colorCode)}>
                     <RadioGroup.Label as="span" className="sr-only">
                       {" "}
-                      {item.colorCode}{" "}
+                      {item1.colorCode}{" "}
                     </RadioGroup.Label>
 
                     <span
@@ -130,7 +139,7 @@ export default function ItemCard({ item }: { item: any }) {
 
         <div className="mt-0.5 inline-block">
           <del className="ml-2 text-lg text-red-700">
-            {(item.buyPrice * 1000).toLocaleString("vi-VN", {
+            {((item.buyPrice as any) * 1000).toLocaleString("vi-VN", {
               style: "currency",
               currency: "VND",
             })}
@@ -142,7 +151,7 @@ export default function ItemCard({ item }: { item: any }) {
 
         <br />
         <span className="ml-1 mt-2 inline-block text-xl">
-          {(item.buyPrice * 600).toLocaleString("vi-VN", {
+          {((item.buyPrice as any) * 600).toLocaleString("vi-VN", {
             style: "currency",
             currency: "VND",
           })}

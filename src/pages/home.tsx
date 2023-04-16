@@ -118,7 +118,7 @@ const Products = () => {
         <section className=" p- -z-10 mx-1 grid gap-5 py-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:px-20">
           {/* <img className='col-span-6 row-span-1' src="banner.jpg" alt='Quảng cáo'></img> */}
 
-          {currentPosts?.map((item: Product) => {
+          {currentPosts?.map((item) => {
             return <ItemCard key={item.code} item={item} />;
           })}
         </section>

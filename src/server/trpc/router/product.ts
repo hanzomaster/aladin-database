@@ -51,7 +51,6 @@ export const productRouter = router({
                 htmlDescription: true,
               },
             },
-            _count: true,
             productDetail: {
               include: {
                 productInStock: {
@@ -83,7 +82,6 @@ export const productRouter = router({
                   htmlDescription: true,
                 },
               },
-              _count: true,
               productDetail: {
                 include: {
                   productInStock: {
