@@ -200,7 +200,7 @@ const NavBar = () => {
 
               <DropdownComponent title="Nữ" type="female" data={femaleData ?? []} />
 
-              <Select placeholder="Chọn mức giá" options={price} />
+              {/* <Select placeholder="Chọn mức giá" options={price} /> */}
             </div>
 
             <div className="relative mx-auto hidden text-gray-600 lg:block">
