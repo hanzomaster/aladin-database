@@ -332,4 +332,46 @@ export const productRouter = router({
         },
       })
     ),
+  removeFromStock: adminProcedure
+    .input(
+      z.object({
+        code: z.string().cuid(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const product = await ctx.prisma.product.findUnique({
+        where: {
+          code: input.code,
+        },
+      });
+      if (!product) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Product not found",
+        });
+      }
+      if (!product.onSale) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Product is not on sale",
+        });
+      }
+      try {
+        await ctx.prisma.product.update({
+          where: {
+            code: input.code,
+          },
+          data: {
+            onSale: false,
+            stopSellingFrom: new Date(),
+          },
+        });
+        return true;
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong",
+        });
+      }
+    }),
 });
