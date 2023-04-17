@@ -216,7 +216,8 @@ export const productRouter = router({
       },
     })
   ),
-  create: adminProcedure.input(createProductSchema).mutation(async ({ ctx, input }) =>
+  create: adminProcedure.input(createProductSchema).mutation(({ ctx, input }) => {
+    redisClient.del("products");
     ctx.prisma.product.create({
       data: {
         name: input.name,
@@ -263,8 +264,8 @@ export const productRouter = router({
           })),
         },
       },
-    })
-  ),
+    });
+  }),
   update: protectedProcedure
     .input(
       z.object({
@@ -273,50 +274,53 @@ export const productRouter = router({
       })
     )
     .mutation(({ ctx, input }) => {
-      if (!input.dto.productDetail) {
-        return ctx.prisma.product.update({
-          where: {
-            code: input.code,
-          },
-          data: {
-            name: input.dto.name,
-            description: input.dto.description,
-            buyPrice: input.dto.buyPrice,
-            line: {
-              update: {
-                type: input.dto.type,
-                gender: input.dto.gender,
+      {
+        redisClient.del("products");
+        if (!input.dto.productDetail) {
+          return ctx.prisma.product.update({
+            where: {
+              code: input.code,
+            },
+            data: {
+              name: input.dto.name,
+              description: input.dto.description,
+              buyPrice: input.dto.buyPrice,
+              line: {
+                update: {
+                  type: input.dto.type,
+                  gender: input.dto.gender,
+                },
               },
             },
-          },
-        });
-      } else {
-        return ctx.prisma.product.update({
-          where: {
-            code: input.code,
-          },
-          data: {
-            name: input.dto.name,
-            description: input.dto.description,
-            buyPrice: input.dto.buyPrice,
-            line: {
-              update: {
-                type: input.dto.type,
-                gender: input.dto.gender,
+          });
+        } else {
+          return ctx.prisma.product.update({
+            where: {
+              code: input.code,
+            },
+            data: {
+              name: input.dto.name,
+              description: input.dto.description,
+              buyPrice: input.dto.buyPrice,
+              line: {
+                update: {
+                  type: input.dto.type,
+                  gender: input.dto.gender,
+                },
+              },
+              productDetail: {
+                deleteMany: {},
+                createMany: {
+                  skipDuplicates: true,
+                  data: input.dto.productDetail.map((detail) => ({
+                    colorCode: detail.colorCode,
+                    image: detail.image,
+                  })),
+                },
               },
             },
-            productDetail: {
-              deleteMany: {},
-              createMany: {
-                skipDuplicates: true,
-                data: input.dto.productDetail.map((detail) => ({
-                  colorCode: detail.colorCode,
-                  image: detail.image,
-                })),
-              },
-            },
-          },
-        });
+          });
+        }
       }
     }),
   delete: protectedProcedure
@@ -325,13 +329,14 @@ export const productRouter = router({
         code: z.string().cuid(),
       })
     )
-    .mutation(({ ctx, input }) =>
+    .mutation(({ ctx, input }) => {
+      redisClient.del("products");
       ctx.prisma.product.delete({
         where: {
           code: input.code,
         },
-      })
-    ),
+      });
+    }),
   removeFromStock: adminProcedure
     .input(
       z.object({
@@ -357,7 +362,8 @@ export const productRouter = router({
         });
       }
       try {
-        await ctx.prisma.product.update({
+        redisClient.del("products");
+        return await ctx.prisma.product.update({
           where: {
             code: input.code,
           },
@@ -366,7 +372,6 @@ export const productRouter = router({
             stopSellingFrom: new Date(),
           },
         });
-        return true;
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

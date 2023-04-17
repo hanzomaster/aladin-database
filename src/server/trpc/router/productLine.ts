@@ -43,11 +43,12 @@ export const productLineRouter = router({
       where: input,
     })
   ),
-  create: adminProcedure.input(createProductLineSchema).mutation(({ ctx, input }) =>
-    ctx.prisma.productLine.create({
+  create: adminProcedure.input(createProductLineSchema).mutation(async ({ ctx, input }) => {
+    await redisClient.del("productLines");
+    return ctx.prisma.productLine.create({
       data: input,
-    })
-  ),
+    });
+  }),
   update: adminProcedure
     .input(
       z.object({
@@ -55,25 +56,27 @@ export const productLineRouter = router({
         dto: createProductLineSchema.partial(),
       })
     )
-    .mutation(({ ctx, input }) =>
-      ctx.prisma.productLine.update({
+    .mutation(async ({ ctx, input }) => {
+      await redisClient.del("productLines");
+      return ctx.prisma.productLine.update({
         where: {
           id: input.id,
         },
         data: input.dto,
-      })
-    ),
+      });
+    }),
   delete: adminProcedure
     .input(
       z.object({
         id: z.string().cuid(),
       })
     )
-    .mutation(({ ctx, input }) =>
+    .mutation(async ({ ctx, input }) => {
+      await redisClient.del("productLines");
       ctx.prisma.productLine.delete({
         where: {
           id: input.id,
         },
-      })
-    ),
+      });
+    }),
 });

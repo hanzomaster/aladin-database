@@ -62,7 +62,8 @@ export const productDetailRouter = router({
         },
       })
     ),
-  create: adminProcedure.input(createProductDetailSchema).query(({ ctx, input }) =>
+  create: adminProcedure.input(createProductDetailSchema).query(({ ctx, input }) => {
+    redisClient.del("productDetails");
     ctx.prisma.productDetail.create({
       data: {
         product: {
@@ -73,9 +74,10 @@ export const productDetailRouter = router({
         colorCode: input.colorCode,
         image: input.image,
       },
-    })
-  ),
-  update: adminProcedure.input(updateProductDetailSchema).query(({ ctx, input }) =>
+    });
+  }),
+  update: adminProcedure.input(updateProductDetailSchema).query(({ ctx, input }) => {
+    redisClient.del("productDetails");
     ctx.prisma.productDetail.update({
       where: {
         productCode_colorCode: {
@@ -87,10 +89,11 @@ export const productDetailRouter = router({
         colorCode: input.dto.colorCode,
         image: input.dto.image,
       },
-    })
-  ),
+    });
+  }),
   delete: adminProcedure.input(deleteProductDetailSchema).query(({ ctx, input }) => {
     if (!input.id && input.product_color) {
+      redisClient.del("productDetails");
       return ctx.prisma.productDetail.delete({
         where: {
           productCode_colorCode: {
@@ -99,11 +102,17 @@ export const productDetailRouter = router({
           },
         },
       });
-    } else {
+    } else if (input.id && !input.product_color) {
+      redisClient.del("productDetails");
       return ctx.prisma.productDetail.delete({
         where: {
           id: input.id,
         },
+      });
+    } else {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Invalid request",
       });
     }
   }),
