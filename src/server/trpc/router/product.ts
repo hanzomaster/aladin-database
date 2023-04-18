@@ -380,10 +380,8 @@ export const productRouter = router({
       }
     }),
 
-    getTotalRevenue: adminProcedure
-    .query(async ({ ctx }) => {
-      const results = await ctx.prisma.$queryRaw(Prisma.sql`SELECT total_revenue()`)
-      const result = results ? results[0]["total_revenue()"] : 0;
-      return result as number;
-    }),
+  getTotalRevenue: adminProcedure.query(async ({ ctx }) => {
+    const results: never = await ctx.prisma.$queryRaw`SELECT total_revenue()`;
+    return results[0]["total_revenue()"] as number;
+  }),
 });
