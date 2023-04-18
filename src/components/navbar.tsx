@@ -21,7 +21,7 @@ const price = [
 const userFunc = ["Quản lý tài khoản", "Quản lý đơn hàng", "Đăng xuất"];
 const menuData = ["Sign in"];
 
-const NavBar = () => {
+const NavBar = () => { 
   const { data: sessionData } = useSession();
   const { cart } = useCart();
   const { data: cartData } = trpc.cart.get.useQuery(undefined, {
@@ -45,7 +45,7 @@ const NavBar = () => {
     .map((item) => item.type);
   const [open, setOpen] = useState(false);
 
-  let total = 0;
+  // const total = 0;
 
   const [message, setMessage] = useState("");
 
@@ -113,14 +113,14 @@ const NavBar = () => {
                               {open &&
                                 (!cart.loading ? cart?.data?.cartItem : cartData?.cartItem)?.map(
                                   (product) => {
-                                    total =
-                                      total +
-                                      parseFloat(
-                                        (
-                                          (product.productDetail.product
-                                            .buyPrice as unknown as number) * product.numberOfItems
-                                        ).toString()
-                                      );
+                                    // total =
+                                    //   total +
+                                    //   parseFloat(
+                                    //     (
+                                    //       (product.productDetail.product
+                                    //         .buyPrice as unknown as number) * product.numberOfItems
+                                    //     ).toString()
+                                    //   );
                                     return (
                                       <li key={product.productDetail.id} className="flex py-6">
                                         <CartItem product={product} />
@@ -137,7 +137,7 @@ const NavBar = () => {
                         <div className="flex justify-between text-base font-medium text-gray-900">
                           <p>Tổng giá tiền</p>
                           <p>
-                            {(total * 1000).toLocaleString("vi-VN", {
+                            {(cartTotalPrice ? cartTotalPrice * 1 : 0).toLocaleString("vi-VN", {
                               style: "currency",
                               currency: "VND",
                             })}

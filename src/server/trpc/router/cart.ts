@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { adminProcedure, protectedProcedure, router } from "../trpc";
 import { z } from "zod";
 
@@ -33,6 +34,7 @@ export const cartRouter = router({
       },
     })
   ),
+
   /**
    * Clear the cart of the current logged in user
    */
@@ -51,6 +53,7 @@ export const cartRouter = router({
       },
     });
   }),
+
   getTotal: protectedProcedure
     .input(
       z.object({
@@ -69,9 +72,11 @@ export const cartRouter = router({
         });
         input.cartId = cartId?.id;
       }
-      const query = "total_cart(" + input.cartId + ")";
-      return await ctx.prisma.$queryRaw<number>`SELECT ${query}`;
+      const results = await ctx.prisma.$queryRaw(Prisma.sql`SELECT total_cart(${input.cartId})`)
+      const result : number = results ? results[0]["total_cart(?)"] : 0;
+      return result;
     }),
+
   getAll: adminProcedure.query(({ ctx }) =>
     ctx.prisma.cart.findMany({
       include: {
@@ -98,4 +103,5 @@ export const cartRouter = router({
       },
     })
   ),
+
 });
