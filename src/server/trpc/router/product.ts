@@ -9,7 +9,7 @@ import {
 } from "./dto";
 import { MeiliSearchApiError } from "meilisearch";
 import { TRPCError } from "@trpc/server";
-import { Gender, Product, ProductDetail, ProductInStock } from "@prisma/client";
+import { Gender, Prisma, Product, ProductDetail, ProductInStock } from "@prisma/client";
 import redisClient from "@utils/redis";
 
 export const productRouter = router({
@@ -378,5 +378,12 @@ export const productRouter = router({
           message: "Something went wrong",
         });
       }
+    }),
+
+    getTotalRevenue: adminProcedure
+    .query(async ({ ctx }) => {
+      const results = await ctx.prisma.$queryRaw(Prisma.sql`SELECT total_revenue()`)
+      const result = results ? results[0]["total_revenue()"] : 0;
+      return result as number;
     }),
 });

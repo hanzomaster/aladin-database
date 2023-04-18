@@ -21,6 +21,8 @@ const Admin: NextPage = () => {
   const { data: users } = trpc.user.getAll.useQuery();
   const { data: orders } = trpc.order.getAll.useQuery();
   const { data: products } = trpc.product.getAll.useQuery();
+  const { data: totalRevenue } = trpc.product.getTotalRevenue.useQuery();
+
   return (
     <div className=" h-full w-full text-sm md:text-base">
       <NavbarAdmin />
@@ -98,7 +100,8 @@ const Admin: NextPage = () => {
           <div className="rounded-xl bg-[#70d1e5] p-4 shadow-sm ">
             <div className="p-4">
               <div className="mb-2 text-lg font-semibold text-gray-800 md:text-2xl">
-                {(getSumAmountOrders(orders ?? []) * 600).toLocaleString("vi-VN", {
+                {/* {(getSumAmountOrders(orders ?? []) * 600).toLocaleString("vi-VN", { */}
+                {((Number(totalRevenue ) ? Number(totalRevenue) : 0) * 1000).toLocaleString("vi-VN", {
                   style: "currency",
                   currency: "VND",
                 })}
