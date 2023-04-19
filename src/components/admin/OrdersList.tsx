@@ -5,7 +5,7 @@ import { AppRouter } from "../../server/trpc/router/_app";
 export function getAmountOrder(orderdetail: OrderDetail[]) {
   let sum = 0;
   orderdetail?.map((item) => {
-    sum += item?.quantityInOrdered * (item?.priceEach as any);
+    sum += item?.quantityInOrdered * Number(item?.priceEach);
   });
   return sum;
 }

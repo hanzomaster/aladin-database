@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { trpc } from "@utils/trpc";
 import { NextPage } from "next";
 import { useS3Upload } from "next-s3-upload";
 import React, { useState } from "react";
-import ColorChooser from "../../components/admin/chooseColorDialog";
+import { useToast } from "../../components/Toast";
 import DropDownItem from "../../components/admin/DropDownItem";
 import NavbarAdmin from "../../components/admin/NavbarAdmin";
-import { useToast } from "../../components/Toast";
-import { trpc } from "@utils/trpc";
+import ColorChooser from "../../components/admin/chooseColorDialog";
 // import { test } from "../utils/test";
 const NewProduct: NextPage = () => {
   const [productDetailList, setProductDetailList] = useState<
@@ -13,8 +14,8 @@ const NewProduct: NextPage = () => {
   >([]);
 
   const { FileInput, openFileDialog, uploadToS3 } = useS3Upload();
-  const [selectedGender, setSelectedGender] = useState("Nam");
-  const [selectedProductLine, setSelectedProductLine] = useState("Polo");
+  const [selectedGender, setSelectedGender] = useState<string>("Nam");
+  const [selectedProductLine, setSelectedProductLine] = useState<string>("Polo");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);

@@ -1,19 +1,20 @@
 import { inferRouterOutputs } from "@trpc/server";
+import { trpc } from "@utils/trpc";
 import { useSession } from "next-auth/react";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { AppRouter } from "../server/trpc/router/_app";
-import { trpc } from "@utils/trpc";
 
+type getCartType = inferRouterOutputs<AppRouter>["cart"]["get"] | undefined;
 type CartContextType = {
-  cart: { data: inferRouterOutputs<AppRouter>["cart"]["get"] | undefined; loading: boolean };
-  setCart: (item: any) => void;
+  cart: { data: getCartType | undefined; loading: boolean };
+  setCart: ({ data, loading }: { data: getCartType | undefined; loading: boolean }) => void;
 };
 export const CartContext = createContext<CartContextType>({
   cart: {
     data: undefined,
     loading: true,
   },
-  setCart: (item: any): void => undefined,
+  setCart: ({}: { data: getCartType | undefined; loading: boolean }): void => undefined,
 });
 
 export const useCart = () => useContext(CartContext);
@@ -24,7 +25,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     enabled: sessionData?.user !== undefined,
   });
   const [cart, setCart] = useState<{
-    data: inferRouterOutputs<AppRouter>["cart"]["get"] | undefined;
+    data: getCartType | undefined;
     loading: boolean;
   }>({
     data: undefined,

@@ -1,12 +1,13 @@
 import { ClothSize } from "@prisma/client";
+import { trpc } from "@utils/trpc";
 import { debounce } from "lodash";
 import Image from "next/image";
 import { useState } from "react";
-import { trpc } from "@utils/trpc";
 import { useToast } from "./Toast";
 
 type ClothSizeLiteral = `${ClothSize}`;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const CartItem = ({ product }: any) => {
   const [count, setCount] = useState(product?.numberOfItems);
   const utils = trpc.useContext();

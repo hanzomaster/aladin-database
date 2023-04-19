@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const Error: NextPage = () => {
   return (
-    <main className="relative relative h-screen overflow-hidden bg-white">
+    <main className="relative h-screen overflow-hidden bg-white">
       <header className="absolute top-0 left-0 right-0 z-20">
         <nav className="container mx-auto px-6 py-4 md:px-12">
           <div className="items-center justify-between md:flex">

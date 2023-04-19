@@ -75,7 +75,7 @@ function menuName(name: string, img: string | null | undefined) {
       <div>
         <Menu.Button className="mt-4 mr-1 ml-4 block rounded-full hover:bg-gray-700 hover:text-white lg:mt-0 lg:inline-block">
           <div className="relative h-7 w-7 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-600">
-            <img src={img} className="text-black-400 absolute h-8 w-8"></img>
+            <img src={img} alt="user image" className="text-black-400 absolute h-8 w-8"></img>
             {/* <svg
               className="text-black-400 absolute -left-1 h-9 w-9"
               fill="currentColor"

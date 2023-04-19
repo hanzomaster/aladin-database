@@ -21,9 +21,7 @@ const OrderDetailAdmin = () => {
   const [isOpen, setIsOpen] = useState(false);
   const openModal = () => setIsOpen(true);
 
-  const closeModal = () => {
-    setIsOpen(false);
-  };
+  const closeModal = () => setIsOpen(false);
 
   const handleUpdateStatus = (status: OrderStatus) => {
     switch (status) {
@@ -295,8 +293,8 @@ function SelectionList({
   setSelected,
   deliveryBrands,
 }: {
-  selected: any;
-  setSelected: any;
+  selected: { name: string } | undefined;
+  setSelected: React.Dispatch<React.SetStateAction<{ name: string }>>;
   deliveryBrands: { name: string }[];
 }) {
   return (
@@ -304,7 +302,7 @@ function SelectionList({
       <Listbox value={selected} onChange={setSelected}>
         <div className="relative mt-1">
           <Listbox.Button className="relative w-full rounded-md border p-2 text-left focus:outline-none">
-            <span className="block truncate">{selected.name}</span>
+            <span className="block truncate">{selected?.name}</span>
             <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
               <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
             </span>
@@ -364,13 +362,13 @@ function UpdateInProcessStatus({
   openModal: () => void;
   closeModal: () => void;
   handleSubmit: () => void;
-  setNameShipper: (e: any) => void;
-  setPhoneShipper: (e: any) => void;
+  setNameShipper: React.Dispatch<React.SetStateAction<string>>;
+  setPhoneShipper: React.Dispatch<React.SetStateAction<string>>;
   nameShipper: string;
   phoneShipper: string;
-  selected: any;
-  setSelected: any;
-  deliveryBrands: any;
+  selected: { name: string } | undefined;
+  setSelected: React.Dispatch<React.SetStateAction<{ name: string }>>;
+  deliveryBrands: Array<{ name: string }>;
 }) {
   return (
     <div className=" w-full">

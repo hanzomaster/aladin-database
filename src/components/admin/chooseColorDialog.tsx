@@ -3,7 +3,13 @@ import { Fragment, useState } from "react";
 import { ColorPicker, useColor } from "react-color-palette";
 import "react-color-palette/lib/css/styles.css";
 
-const ColorChooser = ({ onColorCodeChange, index }: { onColorCodeChange: any; index: number }) => {
+const ColorChooser = ({
+  onColorCodeChange,
+  index,
+}: {
+  onColorCodeChange: (color: string, index: number) => void;
+  index: number;
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [color, setColor] = useColor("hex", "#121212");
 

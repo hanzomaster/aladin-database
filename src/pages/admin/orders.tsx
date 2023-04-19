@@ -1,6 +1,7 @@
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { inferRouterOutputs } from "@trpc/server";
+import { trpc } from "@utils/trpc";
 import { NextPage } from "next";
 import { Fragment, useEffect, useState } from "react";
 import Pagination, { postsPerPage } from "../../components/Pagination";
@@ -8,8 +9,6 @@ import NavbarAdmin from "../../components/admin/NavbarAdmin";
 import OrdersList from "../../components/admin/OrdersList";
 import Searchbar from "../../components/admin/Searchbar";
 import { AppRouter } from "../../server/trpc/router/_app";
-import { trpc } from "@utils/trpc";
-import { STATIC_STATUS_PAGES } from "next/dist/shared/lib/constants";
 
 const Orders: NextPage = () => {
   const [currentPage, setCurrentPage] = useState(1);

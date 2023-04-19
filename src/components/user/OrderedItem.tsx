@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Comment from "../commentDialog";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function OrderedItem({ item, disable }: { item: any; disable: boolean }) {
   return (
     <div className="mt-4 flex w-full flex-col items-start justify-start md:mt-6 md:flex-row md:items-center md:space-x-6 xl:space-x-8 ">

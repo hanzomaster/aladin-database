@@ -26,6 +26,9 @@
       "@utils/*": [
         "./src/utils/*"
       ],
+      "@pages/*": [
+        "./src/pages/*"
+      ],
     }
   },
   "include": [
@@ -33,7 +36,9 @@
     "**/*.ts",
     "**/*.tsx",
     "**/*.cjs",
-    "**/*.mjs"
+    "**/*.mjs",
+    "jest.config.js",
+    "jest.setup.js",
   ],
   "exclude": [
     "node_modules"

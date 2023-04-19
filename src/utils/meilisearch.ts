@@ -10,8 +10,7 @@ const connectMeilisearch = async () => {
   try {
     await meilisearchClient.getIndex("products");
     console.log("? Meilisearch client connected...");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (err: any) {
+  } catch (err) {
     meilisearchClient.createIndex("products");
     console.log("? Meilisearch client created...");
   }

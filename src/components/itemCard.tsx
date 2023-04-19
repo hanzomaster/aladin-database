@@ -8,11 +8,11 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useState } from "react";
 
+import { inferRouterOutputs } from "@trpc/server";
 import { trpc } from "@utils/trpc";
+import { AppRouter } from "../server/trpc/router/_app";
 import { useToast } from "./Toast";
 import ChooseSize from "./chooseSizeDialog";
-import { inferRouterOutputs } from "@trpc/server";
-import { AppRouter } from "../server/trpc/router/_app";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
@@ -48,16 +48,16 @@ export default function ItemCard({
     colors.push(`#${color.colorCode}`);
   });
 
-  const handleAddItemToCart = (id: string) => {
-    sessionData
-      ? mutation.mutate({ productDetailId: id, dto: { size: "S", numberOfItems: 1 } })
-      : toast({
-          type: "error",
-          duration: 2000,
-          message: "Bạn chưa đăng nhập",
-          position: "topRight",
-        });
-  };
+  // const handleAddItemToCart = (id: string) => {
+  //   sessionData
+  //     ? mutation.mutate({ productDetailId: id, dto: { size: "S", numberOfItems: 1 } })
+  //     : toast({
+  //         type: "error",
+  //         duration: 2000,
+  //         message: "Bạn chưa đăng nhập",
+  //         position: "topRight",
+  //       });
+  // };
 
   const handleChooseColor = (color: string) => {
     setSelectedColor(color);
@@ -139,7 +139,7 @@ export default function ItemCard({
 
         <div className="mt-0.5 inline-block">
           <del className="ml-2 text-lg text-red-700">
-            {((item.buyPrice as any) * 1000).toLocaleString("vi-VN", {
+            {(Number(item.buyPrice) * 1000).toLocaleString("vi-VN", {
               style: "currency",
               currency: "VND",
             })}
@@ -151,7 +151,7 @@ export default function ItemCard({
 
         <br />
         <span className="ml-1 mt-2 inline-block text-xl">
-          {((item.buyPrice as any) * 600).toLocaleString("vi-VN", {
+          {(Number(item.buyPrice) * 600).toLocaleString("vi-VN", {
             style: "currency",
             currency: "VND",
           })}

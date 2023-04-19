@@ -58,7 +58,7 @@ export const Toast = (props: ToastProps) => {
   }, [duration, progress]);
   return (
     <div
-      style={{ ["--elm-translate" as any]: animationVariables[position] }}
+      style={{ ["--elm-translate" as string]: animationVariables[position] }}
       className={clsx(
         wrapperClasses[type],
         "animate-toastIn",

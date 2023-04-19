@@ -1,3 +1,7 @@
+import { Gender, Product, ProductDetail, ProductInStock } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
+import redisClient from "@utils/redis";
+import { MeiliSearchApiError } from "meilisearch";
 import { z } from "zod";
 import meilisearchClient from "../../../utils/meilisearch";
 import { adminProcedure, protectedProcedure, publicProcedure, router } from "../trpc";
@@ -7,10 +11,6 @@ import {
   getManyProductSchema,
   updateProductSchema,
 } from "./dto";
-import { MeiliSearchApiError } from "meilisearch";
-import { TRPCError } from "@trpc/server";
-import { Gender, Prisma, Product, ProductDetail, ProductInStock } from "@prisma/client";
-import redisClient from "@utils/redis";
 
 export const productRouter = router({
   count: publicProcedure.query(({ ctx }) => ctx.slavePrisma.product.count()),
@@ -39,6 +39,7 @@ export const productRouter = router({
             name: {
               in: productNames,
             },
+            onSale: true,
           },
           skip: input.option?.skip,
           take: input.option?.take,
@@ -70,6 +71,7 @@ export const productRouter = router({
               name: {
                 contains: input.name,
               },
+              onSale: true,
             },
             skip: input.option?.skip,
             take: input.option?.take,
@@ -183,6 +185,7 @@ export const productRouter = router({
   getManyWhere: publicProcedure.input(getManyProductSchema).query(({ ctx, input }) =>
     ctx.slavePrisma.product.findMany({
       where: {
+        onSale: true,
         name: input.name,
         description: input.description,
         productLine: input.productLine,
@@ -216,9 +219,9 @@ export const productRouter = router({
       },
     })
   ),
-  create: adminProcedure.input(createProductSchema).mutation(({ ctx, input }) => {
+  create: adminProcedure.input(createProductSchema).mutation(async ({ ctx, input }) => {
     redisClient.del("products");
-    ctx.prisma.product.create({
+    const product = await ctx.prisma.product.create({
       data: {
         name: input.name,
         description: input.description,
@@ -265,6 +268,13 @@ export const productRouter = router({
         },
       },
     });
+    meilisearchClient.index("products").addDocuments([
+      {
+        code: product.code,
+        name: product.name,
+      },
+    ]);
+    return product;
   }),
   update: protectedProcedure
     .input(
@@ -274,53 +284,51 @@ export const productRouter = router({
       })
     )
     .mutation(({ ctx, input }) => {
-      {
-        redisClient.del("products");
-        if (!input.dto.productDetail) {
-          return ctx.prisma.product.update({
-            where: {
-              code: input.code,
-            },
-            data: {
-              name: input.dto.name,
-              description: input.dto.description,
-              buyPrice: input.dto.buyPrice,
-              line: {
-                update: {
-                  type: input.dto.type,
-                  gender: input.dto.gender,
-                },
+      redisClient.del("products");
+      if (!input.dto.productDetail) {
+        return ctx.prisma.product.update({
+          where: {
+            code: input.code,
+          },
+          data: {
+            name: input.dto.name,
+            description: input.dto.description,
+            buyPrice: input.dto.buyPrice,
+            line: {
+              update: {
+                type: input.dto.type,
+                gender: input.dto.gender,
               },
             },
-          });
-        } else {
-          return ctx.prisma.product.update({
-            where: {
-              code: input.code,
-            },
-            data: {
-              name: input.dto.name,
-              description: input.dto.description,
-              buyPrice: input.dto.buyPrice,
-              line: {
-                update: {
-                  type: input.dto.type,
-                  gender: input.dto.gender,
-                },
-              },
-              productDetail: {
-                deleteMany: {},
-                createMany: {
-                  skipDuplicates: true,
-                  data: input.dto.productDetail.map((detail) => ({
-                    colorCode: detail.colorCode,
-                    image: detail.image,
-                  })),
-                },
+          },
+        });
+      } else {
+        return ctx.prisma.product.update({
+          where: {
+            code: input.code,
+          },
+          data: {
+            name: input.dto.name,
+            description: input.dto.description,
+            buyPrice: input.dto.buyPrice,
+            line: {
+              update: {
+                type: input.dto.type,
+                gender: input.dto.gender,
               },
             },
-          });
-        }
+            productDetail: {
+              deleteMany: {},
+              createMany: {
+                skipDuplicates: true,
+                data: input.dto.productDetail.map((detail) => ({
+                  colorCode: detail.colorCode,
+                  image: detail.image,
+                })),
+              },
+            },
+          },
+        });
       }
     }),
   delete: protectedProcedure
@@ -331,6 +339,7 @@ export const productRouter = router({
     )
     .mutation(({ ctx, input }) => {
       redisClient.del("products");
+      meilisearchClient.index("products").deleteDocument(input.code);
       ctx.prisma.product.delete({
         where: {
           code: input.code,

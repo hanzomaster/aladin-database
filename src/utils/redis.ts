@@ -10,9 +10,10 @@ const connectRedis = async () => {
   try {
     await redisClient.connect();
     console.log("? Redis client connected...");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (err: any) {
-    console.error("Redis client error: ", err.message);
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error("Redis client error: ", err.message);
+    }
   }
 };
 

@@ -5,16 +5,16 @@ import { Fragment, useState } from "react";
 interface Props {
   title: string;
   list: string[];
-  setSelectedGender: any;
-  setSelectedLine: any;
+  setSelectedGender: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedLine: React.Dispatch<React.SetStateAction<string>>;
 }
-export default function Example(props: Props) {
-  const [selected, setSelected] = useState(props.list[0]);
-  if (props.title === "Gender") {
-    props.setSelectedGender(selected);
+export default function DropDownItem({ title, list, setSelectedGender, setSelectedLine }: Props) {
+  const [selected, setSelected] = useState(list[0]);
+  if (title === "Gender") {
+    setSelectedGender(selected ?? "");
   }
-  if (props.title === "ProductLine") {
-    props.setSelectedLine(selected);
+  if (title === "ProductLine") {
+    setSelectedLine(selected ?? "");
   }
   return (
     <div className="w-36">
@@ -32,7 +32,7 @@ export default function Example(props: Props) {
             leaveFrom="opacity-100"
             leaveTo="opacity-0">
             <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-              {props.list.map((person, personIdx) => (
+              {list.map((person, personIdx) => (
                 <Listbox.Option
                   key={personIdx}
                   className={({ active }) =>

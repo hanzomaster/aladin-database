@@ -6,6 +6,7 @@ import { useToast } from "../../components/Toast";
 import Navbar from "../../components/navbar";
 import OrderedItem from "../../components/user/OrderedItem";
 
+import { OrderStatus } from "@prisma/client";
 import { trpc } from "@utils/trpc";
 
 const OrderDetail = () => {
@@ -38,7 +39,7 @@ const OrderDetail = () => {
     },
   });
 
-  const handleCancelOrder = (status: any) => {
+  const handleCancelOrder = (status: OrderStatus | undefined) => {
     if (status === "CONFIRM_PENDING") {
       mutation.mutate({
         orderNumber: id as string,

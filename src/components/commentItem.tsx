@@ -1,13 +1,20 @@
+import { inferRouterOutputs } from "@trpc/server";
+import { AppRouter } from "../server/trpc/router/_app";
+
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-const CommentItem = ({ comment }: any) => {
+const CommentItem = ({
+  comment,
+}: {
+  comment: inferRouterOutputs<AppRouter>["user"]["comment"]["getOfProduct"][number];
+}) => {
   return (
     <>
       <article>
         <div className="mb-4 flex items-center space-x-4">
-          <img className="h-10 w-10 rounded-full" src={comment.user.image} alt="" />
+          <img className="h-10 w-10 rounded-full" src={comment.user.image ?? undefined} alt="" />
           <div className="space-y-1 font-medium ">
             <p>{comment.user.name}</p>
           </div>
