@@ -193,8 +193,8 @@ const NavBar = () => {
             </div>
           </div>
 
-          <div className="menu hidden w-full flex-grow px-8 lg:block lg:w-auto lg:items-center lg:px-3">
-            <div className="text-md font-bold text-gray-700 lg:flex-grow flex flex-row">
+          <div className="menu hidden w-full flex-grow px-8 lg:block lg:flex lg:w-auto lg:items-center lg:px-3">
+            <div className="text-md flex flex-row font-bold text-gray-700 lg:flex-grow">
               <DropdownComponent title="Nam" type="male" data={maleData ?? []} />
 
               <DropdownComponent title="Nữ" type="female" data={femaleData ?? []} />
