@@ -251,7 +251,7 @@ export const orderRouter = router({
           customerNumber: true,
         },
       });
-      if (!order || order.customerNumber !== ctx.session.user.id) {
+      if (!order) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Order not found",
@@ -263,6 +263,37 @@ export const orderRouter = router({
         },
         data: {
           status: OrderStatus.RETURN,
+        },
+      });
+    }),
+    completeOrder: protectedProcedure
+    .input(
+      z.object({
+        orderNumber: z.string().cuid(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // check if order number include in user's order
+      const order = await ctx.prisma.order.findUnique({
+        where: {
+          orderNumber: input.orderNumber,
+        },
+        select: {
+          customerNumber: true,
+        },
+      });
+      if (!order || order.customerNumber !== ctx.session.user.id) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Order not found",
+        });
+      }
+      return ctx.prisma.order.update({
+        where: {
+          orderNumber: input.orderNumber,
+        },
+        data: {
+          status: OrderStatus.COMPLETED,
         },
       });
     }),
@@ -285,7 +316,7 @@ export const orderRouter = router({
           customerNumber: true,
         },
       });
-      if (!order || order.customerNumber !== ctx.session.user.id) {
+      if (!order) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Order not found",
@@ -318,7 +349,7 @@ export const orderRouter = router({
           customerNumber: true,
         },
       });
-      if (!order || order.customerNumber !== ctx.session.user.id) {
+      if (!order) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Order not found",

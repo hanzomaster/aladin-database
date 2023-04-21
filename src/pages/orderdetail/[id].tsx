@@ -27,6 +27,17 @@ const OrderDetail = () => {
     },
   });
 
+  const completeMutation = trpc.order.completeOrder.useMutation({
+    onSuccess: () => {
+      toast({
+        type: "success",
+        duration: 1500,
+        message: "Xác nhận thành công",
+        position: "topCenter",
+      });
+      window.location.reload();
+    },
+  });
   const returnMutation = trpc.order.returnOrder.useMutation({
     onSuccess: () => {
       toast({
@@ -77,6 +88,7 @@ const OrderDetail = () => {
     setIsConfirmOpen(false);
   }
   function openConfirmModal() {
+    completeMutation.mutate({ orderNumber: id as string });
     setIsConfirmOpen(true);
   }
   return (

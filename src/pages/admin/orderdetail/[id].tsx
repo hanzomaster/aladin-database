@@ -8,15 +8,36 @@ import OrderedItem from "../../../components/user/OrderedItem";
 
 import { OrderStatus } from "@prisma/client";
 import { trpc } from "@utils/trpc";
+import { useToast } from "../../../components/Toast";
 
 const OrderDetailAdmin = () => {
   const router = useRouter();
+  const { add: toast } = useToast();
   const { id } = router.query;
   let total = 0;
   const { data: session } = useSession();
-  const mutation = trpc.order.updateOrderInProcess.useMutation();
-  const cancelMutation = trpc.order.acceptCancelOrder.useMutation();
-  const updateMutation = trpc.order.updateOrderStatus.useMutation();
+  const mutation = trpc.order.updateOrderInProcess.useMutation({
+    onSuccess: () => {
+      toast({
+        type: "success",
+        duration: 6000,
+        message: "Cập nhật thành công",
+        position: "topCenter",
+      });
+      setIsOpen(false);
+    },
+  });
+  const updateMutation = trpc.order.updateOrderStatus.useMutation({
+    onSuccess: () => {
+      toast({
+        type: "success",
+        duration: 6000,
+        message: "Cập nhật thành công",
+        position: "topCenter",
+      });
+      setIsOpen(false);
+    },
+  });
 
   const [isOpen, setIsOpen] = useState(false);
   const openModal = () => setIsOpen(true);
@@ -37,7 +58,6 @@ const OrderDetailAdmin = () => {
       default:
         break;
     }
-    setIsOpen(false);
   };
 
   const [nameShipper, setNameShipper] = useState("");
@@ -53,7 +73,7 @@ const OrderDetailAdmin = () => {
       nameShipper: nameShipper,
       phoneShipper: phoneShipper,
     });
-    setIsOpen(false);
+    // setIsOpen(false);
   };
   const deliveryBrands = [
     { name: "Giao hàng nhanh (GHN)" },
