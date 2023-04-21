@@ -7,14 +7,20 @@ const redisClient = createClient({
 });
 
 const connectRedis = async () => {
-  try {
-    await redisClient.connect();
-    console.log("? Redis client connected...");
-  } catch (err) {
-    if (err instanceof Error) {
-      console.error("Redis client error: ", err.message);
-    }
-  }
+  redisClient.connect();
+};
+
+export const disconnectRedis = async () => {
+  await new Promise<void>((resolve) => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    redisClient.quit(() => {
+      resolve();
+    });
+  });
+  // redis.quit() creates a thread to close the connection.
+  // We wait until all threads have been run once to ensure the connection closes.
+  await new Promise((resolve) => setImmediate(resolve));
 };
 
 connectRedis();

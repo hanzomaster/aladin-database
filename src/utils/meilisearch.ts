@@ -7,10 +7,10 @@ const meilisearchClient = new MeiliSearch({
 });
 
 const connectMeilisearch = async () => {
-  try {
-    await meilisearchClient.getIndex("products");
-    console.log("? Meilisearch client connected...");
-  } catch (err) {
+  const index = await meilisearchClient.index("products");
+  if (index) {
+    console.log("Meilisearch client connected...");
+  } else {
     meilisearchClient.createIndex("products");
     console.log("? Meilisearch client created...");
   }
