@@ -7,7 +7,7 @@ import { useToast } from "../../components/Toast";
 import DropDownItem from "../../components/admin/DropDownItem";
 import NavbarAdmin from "../../components/admin/NavbarAdmin";
 import ColorChooser from "../../components/admin/chooseColorDialog";
-// import { test } from "../utils/test";
+
 const NewProduct: NextPage = () => {
   const [productDetailList, setProductDetailList] = useState<
     { colorCode: string; image: string; numS: number; numM: number; numL: number; numXL: number }[]
