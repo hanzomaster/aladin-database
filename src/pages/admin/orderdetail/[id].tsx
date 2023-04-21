@@ -160,14 +160,35 @@ const OrderDetailAdmin = () => {
                 <div className="flex items-center justify-between">
                   <h3 className="text-xl font-semibold leading-5 text-gray-800">Vận chuyển</h3>
                   <h3 className="text-base leading-5 ">
-                    {order?.status === "SHIPPED" && <p>Đã giao</p>}
+                    {order?.status === "SHIPPED" && (
+                      <>
+                        <p>Đã giao</p> <p>{"Shipper: " + order?.shipperName}</p>
+                        <p>{"Số điện thoại: " + order?.shipperPhone}</p>
+                      </>
+                    )}
                     {order?.status === "CONFIRM_PENDING" && <p>Đang chờ xác nhận</p>}
+                    {order?.status === "INPROCESS" && (
+                      <>
+                        <p>Đang giao</p> <p>{"Shipper: " + order?.shipperName}</p>
+                        <p>{"Số điện thoại: " + order?.shipperPhone}</p>{" "}
+                      </>
+                    )}
                     {order?.status === "CANCEL" && <p>Đã hủy</p>}
                     {order?.status === "CANCEL_PENDING" && <p>Đang chờ hủy</p>}
-                    {order?.status === "INPROCESS" && <p> Đang giao</p>}
                     {order?.status === "RETURN_PENDING" && <p> Đang chờ đổi/ trả</p>}
-                    {order?.status === "RETURN" && <p>Đã đổi/trả</p>}
-                    {order?.status === "COMPLETED" && <p>Hoàn thành</p>}
+                    {order?.status === "RETURN" && (
+                      <>
+                        <p>Đã đổi/trả</p> <p>{"Shipper: " + order?.shipperName}</p>
+                        <p>{"Số điện thoại: " + order?.shipperPhone}</p>{" "}
+                      </>
+                    )}
+                    {order?.status === "COMPLETED" && (
+                      <>
+                        {" "}
+                        <p>Hoàn thành</p> <p>{"Shipper: " + order?.shipperName}</p>
+                        <p>{"Số điện thoại: " + order?.shipperPhone}</p>
+                      </>
+                    )}
                   </h3>
                 </div>
                 <div className="flex w-full items-start justify-between">
