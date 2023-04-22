@@ -451,21 +451,21 @@ function UpdateInProcessStatus({
                   </Dialog.Title>
                   <div className="mt-5">
                     <div className="flex flex-col gap-2">
-                      <label
+                      {/* <label
                         htmlFor="info_delivery"
                         className="text-base font-semibold text-gray-700">
                         Đơn vị vận chuyển
-                      </label>
+                      </label> */}
                       {/* <input
                         type="text"
                         id="info_delivery"
                         className="w-full rounded-md border border-gray-300 p-2 outline-none"
                       /> */}
-                      <SelectionList
+                      {/* <SelectionList
                         selected={selected}
                         setSelected={setSelected}
                         deliveryBrands={deliveryBrands}
-                      />
+                      /> */}
                     </div>
                     <div className="flex flex-col gap-2">
                       <h1 className="mt-5 font-semibold text-gray-700">Thông tin shipper</h1>

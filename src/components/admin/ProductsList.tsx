@@ -1,4 +1,6 @@
 import { inferRouterOutputs } from "@trpc/server";
+import { trpc } from "@utils/trpc";
+import { useToast } from "../../components/Toast";
 import { AppRouter } from "../../server/trpc/router/_app";
 import QuantityProduct from "./QuantityProduct";
 const ProductsList = ({
@@ -6,6 +8,22 @@ const ProductsList = ({
 }: {
   productsData: inferRouterOutputs<AppRouter>["product"]["getAll"] | undefined;
 }) => {
+  const { add: toast } = useToast();
+  const mutation = trpc.product.removeFromStock.useMutation({
+    onSuccess: () => {
+      toast({
+        type: "success",
+        duration: 6000,
+        message: "Xóa sản phẩm thành công",
+        position: "topCenter",
+      });
+      // setIsOpen(false);
+    },
+  });
+
+  const handleRemove = (id: string) => {
+    mutation.mutate({ code: id });
+  };
   return (
     <div className="mb-10 h-full w-full">
       <table className="w-full">
@@ -76,7 +94,9 @@ const ProductsList = ({
                   <QuantityProduct productDetail={product.productDetail} />
                 </td>
                 <td className="whitespace-nowrap px-2 py-3 md:px-6">
-                  <button className="rounded-md bg-red-500 text-white">
+                  <button
+                    className="rounded-md bg-red-500 text-white"
+                    onClick={() => handleRemove(product.code)}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"

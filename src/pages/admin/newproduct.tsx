@@ -112,7 +112,7 @@ const NewProduct: NextPage = () => {
   return (
     <div className="h-full w-full text-sm md:text-base">
       <NavbarAdmin />
-      <form className="w-full px-10 pt-10 pb-3 md:px-28" onSubmit={createProduct}>
+      <form className="w-full px-10 pb-3 pt-10 md:px-28" onSubmit={createProduct}>
         <div className="my-5 flex flex-col lg:w-[60%] lg:flex-row lg:justify-between">
           <div className="flex items-center md:flex-row">
             <label
