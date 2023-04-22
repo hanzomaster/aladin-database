@@ -112,7 +112,7 @@ const OrderDetailAdmin = () => {
 
                 return (
                   <>
-                    <OrderedItem item={item} disable={!(order.status === "SHIPPED")} />
+                    <OrderedItem item={item} disable={true} />
                   </>
                 );
               })}

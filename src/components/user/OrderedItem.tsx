@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Comment from "../commentDialog";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function OrderedItem({ item, disable }: { item: any; disable: boolean }) {
@@ -61,7 +62,13 @@ function OrderedItem({ item, disable }: { item: any; disable: boolean }) {
           </p>
 
           <div className="relative mb-0 flex h-full w-full items-center justify-center">
-            <div className=""></div>
+            <div className={disable ? "hidden" : ""}>
+              <Comment
+                productDetailId={item.productDetailId}
+                productName={item.productDetail.product.name}
+                isDisable={disable}
+              />
+            </div>
           </div>
         </div>
       </div>
