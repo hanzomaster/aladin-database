@@ -10,8 +10,8 @@ afterAll(() => {
   disconnectRedis();
 });
 
-describe("Product API", () => {
-  it("should return a product", async () => {
+describe("Test API", () => {
+  it("should tell you who you are", async () => {
     const res = await trpcRequest().example.hello();
     expect(res).toEqual({
       greeting: "This is me",
