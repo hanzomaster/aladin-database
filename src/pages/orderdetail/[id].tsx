@@ -117,7 +117,7 @@ const OrderDetail = () => {
 
                 return (
                   <>
-                    <OrderedItem item={item} disable={order.status !== "SHIPPED"} />
+                    <OrderedItem item={item} disable={order.status !== "COMPLETED"} />
                   </>
                 );
               })}
@@ -164,20 +164,35 @@ const OrderDetail = () => {
               <div className="flex w-full flex-col justify-center space-y-6 bg-gray-50 px-4 py-6 md:p-6 xl:p-8   ">
                 <div className="flex justify-between">
                   <h3 className="text-xl font-semibold leading-5 text-gray-800">Vận chuyển</h3>
-                  {order?.status === "SHIPPED" && (<><p>Đã giao</p> <p>{"Shipper: " + order?.shipperName}</p>
-                  <p>{"Số điện thoại: " + order?.shipperPhone}</p>
-                  </>)}
+                  {order?.status === "SHIPPED" && (
+                    <>
+                      <p>Đã giao</p> <p>{"Shipper: " + order?.shipperName}</p>
+                      <p>{"Số điện thoại: " + order?.shipperPhone}</p>
+                    </>
+                  )}
                   {order?.status === "CONFIRM_PENDING" && <p>Đang chờ xác nhận</p>}
-                  {order?.status === "INPROCESS" && <><p>Đang giao</p> <p>{"Shipper: " + order?.shipperName}</p>
-                  <p>{"Số điện thoại: " + order?.shipperPhone}</p> </>}
+                  {order?.status === "INPROCESS" && (
+                    <>
+                      <p>Đang giao</p> <p>{"Shipper: " + order?.shipperName}</p>
+                      <p>{"Số điện thoại: " + order?.shipperPhone}</p>{" "}
+                    </>
+                  )}
                   {order?.status === "CANCEL" && <p>Đã hủy</p>}
                   {order?.status === "CANCEL_PENDING" && <p>Đang chờ hủy</p>}
                   {order?.status === "RETURN_PENDING" && <p> Đang chờ đổi/ trả</p>}
-                  {order?.status === "RETURN" && <>
-                 <p>Đã đổi/trả</p> <p>{"Shipper: " + order?.shipperName}</p>
-                  <p>{"Số điện thoại: " + order?.shipperPhone}</p> </> }
-                  {order?.status === "COMPLETED" && <> <p>Hoàn thành</p> <p>{"Shipper: " + order?.shipperName}</p>
-                  <p>{"Số điện thoại: " + order?.shipperPhone}</p></> }
+                  {order?.status === "RETURN" && (
+                    <>
+                      <p>Đã đổi/trả</p> <p>{"Shipper: " + order?.shipperName}</p>
+                      <p>{"Số điện thoại: " + order?.shipperPhone}</p>{" "}
+                    </>
+                  )}
+                  {order?.status === "COMPLETED" && (
+                    <>
+                      {" "}
+                      <p>Hoàn thành</p> <p>{"Shipper: " + order?.shipperName}</p>
+                      <p>{"Số điện thoại: " + order?.shipperPhone}</p>
+                    </>
+                  )}
                 </div>
                 <div className="flex w-full items-start justify-between">
                   <div className="flex items-center justify-center space-x-4">

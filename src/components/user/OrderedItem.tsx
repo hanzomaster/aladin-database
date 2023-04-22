@@ -64,7 +64,7 @@ function OrderedItem({ item, disable }: { item: any; disable: boolean }) {
           <div className="relative mb-0 flex h-full w-full items-center justify-center">
             <div className={disable ? "hidden" : ""}>
               <Comment
-                productDetailId={item.productDetailId}
+                productDetailId={item.productDetail.product.code}
                 productName={item.productDetail.product.name}
                 isDisable={disable}
               />
