@@ -33,11 +33,10 @@ export const productRouter = router({
           limit: input.option?.take,
           offset: input.option?.skip,
         });
-        const productNames = searchResult.hits.map((hit) => hit.name);
-        return ctx.slavePrisma.product.findMany({
+        const result = await ctx.slavePrisma.product.findMany({
           where: {
             name: {
-              in: productNames,
+              in: searchResult.hits.map((hit) => hit.name),
             },
             onSale: true,
           },
@@ -64,6 +63,15 @@ export const productRouter = router({
             },
           },
         });
+        // sort result to match search result id
+        const sortedResult = [];
+        for (const productId of searchResult.hits.map((hit) => hit.code)) {
+          const product = result.find((product) => product.code === productId);
+          if (product) {
+            sortedResult.push(product);
+          }
+        }
+        return sortedResult;
       } catch (err) {
         if (err instanceof MeiliSearchApiError) {
           return ctx.slavePrisma.product.findMany({
@@ -104,7 +112,7 @@ export const productRouter = router({
         }
       }
     }),
-  getAll: publicProcedure.input(getAllSchema).query(async ({ ctx, input }) => {
+  getAllOnSale: publicProcedure.input(getAllSchema).query(async ({ ctx, input }) => {
     try {
       const cacheResult = [];
       for await (const { field, value } of redisClient.hScanIterator("products")) {
@@ -164,6 +172,27 @@ export const productRouter = router({
       });
     }
   }),
+  getAll: adminProcedure.input(getAllSchema).query(async ({ ctx, input }) =>
+    ctx.prisma.product.findMany({
+      skip: input?.skip,
+      take: input?.take,
+      include: {
+        line: {
+          select: {
+            type: true,
+            gender: true,
+            textDescription: true,
+            htmlDescription: true,
+          },
+        },
+        productDetail: {
+          include: {
+            productInStock: true,
+          },
+        },
+      },
+    })
+  ),
   getOneWhere: publicProcedure
     .input(
       z.object({

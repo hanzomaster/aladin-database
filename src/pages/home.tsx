@@ -94,9 +94,9 @@ const Products = () => {
     );
   }
   if (!gender && !name) {
-    const { data } = trpc.product.getAll.useQuery();
+    const { data } = trpc.product.getAllOnSale.useQuery();
 
-    const currentPosts: inferRouterOutputs<AppRouter>["product"]["getAll"] | undefined =
+    const currentPosts: inferRouterOutputs<AppRouter>["product"]["getAllOnSale"] | undefined =
       data?.slice(firstPostIndex, lastPostIndex);
 
     return (
