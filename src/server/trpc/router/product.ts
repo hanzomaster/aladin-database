@@ -110,8 +110,13 @@ export const productRouter = router({
       for await (const { field, value } of redisClient.hScanIterator("products")) {
         cacheResult.push(JSON.parse(value));
       }
-      if (cacheResult) {
-        const numberOfProducts = await ctx.slavePrisma.product.count();
+      if (cacheResult.length > 0) {
+        console.log("products", cacheResult.length);
+        const numberOfProducts = await ctx.slavePrisma.product.count({
+          where: {
+            onSale: true,
+          },
+        });
         if (cacheResult.length === numberOfProducts) {
           return cacheResult as (Product & {
             productDetail: (ProductDetail & {
@@ -363,13 +368,15 @@ export const productRouter = router({
           },
         });
       }
-      redisClient.hSet("products", updateProduct.code, JSON.stringify(updateProduct));
-      meilisearchClient.index("products").updateDocuments([
-        {
-          code: updateProduct.code,
-          name: updateProduct.name,
-        },
-      ]);
+      if (updateProduct.onSale === true) {
+        redisClient.hSet("products", updateProduct.code, JSON.stringify(updateProduct));
+        meilisearchClient.index("products").updateDocuments([
+          {
+            code: updateProduct.code,
+            name: updateProduct.name,
+          },
+        ]);
+      }
       return updateProduct;
     }),
   delete: protectedProcedure
@@ -386,6 +393,7 @@ export const productRouter = router({
           code: input.code,
         },
       });
+      return true;
     }),
   removeFromStock: adminProcedure
     .input(
@@ -412,9 +420,7 @@ export const productRouter = router({
         });
       }
       try {
-        redisClient.hSet("products", input.code, JSON.stringify(product));
-        meilisearchClient.index("products").deleteDocument(input.code);
-        return await ctx.prisma.product.update({
+        await ctx.prisma.product.update({
           where: {
             code: input.code,
           },
@@ -423,6 +429,9 @@ export const productRouter = router({
             stopSellingFrom: new Date(),
           },
         });
+        redisClient.hDel("products", input.code);
+        meilisearchClient.index("products").deleteDocument(input.code);
+        return true;
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
@@ -455,22 +464,23 @@ export const productRouter = router({
         });
       }
       try {
-        redisClient.hSet("products", input.code, JSON.stringify(product));
-        meilisearchClient.index("products").addDocuments([
-          {
-            code: product.code,
-            name: product.name,
-          },
-        ]);
-        return await ctx.prisma.product.update({
+        await ctx.prisma.product.update({
           where: {
-            code: input.code,
+            code: product.code,
           },
           data: {
             onSale: true,
             stopSellingFrom: null,
           },
         });
+        redisClient.hSet("products", product.code, JSON.stringify(product));
+        meilisearchClient.index("products").addDocuments([
+          {
+            code: product.code,
+            name: product.name,
+          },
+        ]);
+        return true;
       } catch (err) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
