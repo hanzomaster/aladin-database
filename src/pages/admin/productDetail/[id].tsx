@@ -1,6 +1,7 @@
 import { Dialog, RadioGroup, Transition } from "@headlessui/react";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/solid";
 import { ClothSize } from "@prisma/client";
+import { trpc } from "@utils/trpc";
 import { NextPage } from "next";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
@@ -9,7 +10,6 @@ import { Fragment, useState } from "react";
 import { useToast } from "../../../components/Toast";
 import NavbarAdmin from "../../../components/admin/NavbarAdmin";
 import CommentItem from "../../../components/commentItem";
-import { trpc } from "@utils/trpc";
 
 const sizeGuideSrc = "https://canifa.com/assets/Women-measurement.png";
 // const description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
@@ -33,7 +33,7 @@ const ProductDetailAdmin: NextPage = () => {
   const [selectedImage, setSelectedImage] = useState(product?.productDetail[0]?.image);
   const [selectedId, setSelectedId] = useState(product?.productDetail[0]?.id as string);
   const { data: comments } = trpc.user.comment.getOfProduct.useQuery({
-    id: (selectedId ? selectedId : product?.productDetail[0]?.id) as string,
+    id: product?.code as string,
   });
   const mutation = trpc.cartItem.updateOrCreate.useMutation({
     onSuccess: () => {
@@ -105,7 +105,7 @@ const ProductDetailAdmin: NextPage = () => {
       <section className="mx-1 gap-5 py-10">
         <div className="inset-0">
           <div className="mx-auto my-0 max-h-full w-3/4 bg-white">
-            <div className="mt-10 flex w-full items-center overflow-hidden bg-white px-4 pt-14 pb-8  sm:px-6 sm:pt-8 md:p-6 lg:p-8">
+            <div className="mt-10 flex w-full items-center overflow-hidden bg-white px-4 pb-8 pt-14  sm:px-6 sm:pt-8 md:p-6 lg:p-8">
               <div className="gap-y grid w-full grid-cols-2 items-start gap-x-6 sm:grid-cols-4 lg:gap-x-8">
                 <div className=" h-full w-4/5 overflow-hidden rounded-lg bg-gray-100 sm:col-span-2 lg:col-span-2">
                   <div className="relative h-full w-full">
@@ -135,7 +135,7 @@ const ProductDetailAdmin: NextPage = () => {
                           currency: "VND",
                         })}
                       </del>
-                      <small className="mr-3 ml-2  rounded-full bg-red-700 px-2 tracking-widest text-white">
+                      <small className="ml-2 mr-3  rounded-full bg-red-700 px-2 tracking-widest text-white">
                         -40&#37;
                       </small>
                     </div>
@@ -246,7 +246,7 @@ const ProductDetailAdmin: NextPage = () => {
                                     leaveFrom="opacity-100 translate-y-0 md:scale-100"
                                     leaveTo="opacity-0 translate-y-4 md:translate-y-0 md:scale-95">
                                     <Dialog.Panel className="flex w-full transform text-left text-base transition md:my-8 md:max-w-2xl md:px-4 lg:max-w-4xl">
-                                      <div className=" relative mt-[20%] flex w-full items-center overflow-hidden bg-white px-4 pt-14 pb-8 shadow-2xl sm:px-6 sm:pt-8 md:p-6 lg:p-8">
+                                      <div className=" relative mt-[20%] flex w-full items-center overflow-hidden bg-white px-4 pb-8 pt-14 shadow-2xl sm:px-6 sm:pt-8 md:p-6 lg:p-8">
                                         <img
                                           src={sizeGuideSrc}
                                           alt="size guide"
@@ -254,7 +254,7 @@ const ProductDetailAdmin: NextPage = () => {
                                         />
                                         <button
                                           type="button"
-                                          className="absolute top-4 right-4 text-gray-400 hover:text-gray-500 sm:top-8 sm:right-6 md:top-6 md:right-6 lg:top-8 lg:right-8"
+                                          className="absolute right-4 top-4 text-gray-400 hover:text-gray-500 sm:right-6 sm:top-8 md:right-6 md:top-6 lg:right-8 lg:top-8"
                                           onClick={() => setOpen(false)}>
                                           <span className="sr-only">Close</span>
                                           <XMarkIcon className="h-6 w-6" aria-hidden="true" />
