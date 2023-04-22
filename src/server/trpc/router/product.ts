@@ -1,4 +1,4 @@
-import { Gender, Product, ProductDetail, ProductInStock } from "@prisma/client";
+import { ClothSize, Gender, Product, ProductDetail, ProductInStock } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import redisClient from "@utils/redis";
 import { MeiliSearchApiError } from "meilisearch";
@@ -106,19 +106,25 @@ export const productRouter = router({
     }),
   getAll: publicProcedure.input(getAllSchema).query(async ({ ctx, input }) => {
     try {
-      const cacheResult = await redisClient.get("products");
+      const cacheResult = [];
+      for await (const { field, value } of redisClient.hScanIterator("products")) {
+        cacheResult.push(JSON.parse(value));
+      }
       if (cacheResult) {
-        return (await JSON.parse(cacheResult)) as (Product & {
-          productDetail: (ProductDetail & {
-            productInStock: ProductInStock[];
+        const numberOfProducts = await ctx.slavePrisma.product.count();
+        if (cacheResult.length === numberOfProducts) {
+          return cacheResult as (Product & {
+            productDetail: (ProductDetail & {
+              productInStock: ProductInStock[];
+            })[];
+            line: {
+              type: string;
+              gender: Gender;
+              textDescription: string | null;
+              htmlDescription: string | null;
+            };
           })[];
-          line: {
-            type: string;
-            gender: Gender;
-            textDescription: string | null;
-            htmlDescription: string | null;
-          };
-        })[];
+        }
       }
       const result = await ctx.slavePrisma.product.findMany({
         skip: input?.skip,
@@ -142,7 +148,9 @@ export const productRouter = router({
           },
         },
       });
-      redisClient.set("products", JSON.stringify(result));
+      result.forEach((product) => {
+        redisClient.hSet("products", product.code, JSON.stringify(product));
+      });
       return result;
     } catch (err) {
       throw new TRPCError({
@@ -157,8 +165,25 @@ export const productRouter = router({
         code: z.string().cuid(),
       })
     )
-    .query(({ ctx, input }) =>
-      ctx.slavePrisma.product.findUnique({
+    .query(async ({ ctx, input }) => {
+      const cacheResult = await redisClient.hGet("products", input.code);
+      if (cacheResult) {
+        return JSON.parse(cacheResult) as Product & {
+          productDetail: (ProductDetail & {
+            productInStock: {
+              quantity: number;
+              size: ClothSize;
+            }[];
+          })[];
+          line: {
+            type: string;
+            gender: Gender;
+            textDescription: string | null;
+            htmlDescription: string | null;
+          };
+        };
+      }
+      const result = await ctx.slavePrisma.product.findUnique({
         where: input,
         include: {
           line: {
@@ -180,8 +205,16 @@ export const productRouter = router({
             },
           },
         },
-      })
-    ),
+      });
+      if (!result) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Product not found",
+        });
+      }
+      redisClient.hSet("products", result.code, JSON.stringify(result));
+      return result;
+    }),
   getManyWhere: publicProcedure.input(getManyProductSchema).query(({ ctx, input }) =>
     ctx.slavePrisma.product.findMany({
       where: {
@@ -220,7 +253,6 @@ export const productRouter = router({
     })
   ),
   create: adminProcedure.input(createProductSchema).mutation(async ({ ctx, input }) => {
-    redisClient.del("products");
     const product = await ctx.prisma.product.create({
       data: {
         name: input.name,
@@ -268,6 +300,7 @@ export const productRouter = router({
         },
       },
     });
+    redisClient.hSet("products", product.code, JSON.stringify(product));
     meilisearchClient.index("products").addDocuments([
       {
         code: product.code,
@@ -283,10 +316,10 @@ export const productRouter = router({
         dto: updateProductSchema,
       })
     )
-    .mutation(({ ctx, input }) => {
-      redisClient.del("products");
+    .mutation(async ({ ctx, input }) => {
+      let updateProduct;
       if (!input.dto.productDetail) {
-        return ctx.prisma.product.update({
+        updateProduct = await ctx.prisma.product.update({
           where: {
             code: input.code,
           },
@@ -303,7 +336,7 @@ export const productRouter = router({
           },
         });
       } else {
-        return ctx.prisma.product.update({
+        updateProduct = await ctx.prisma.product.update({
           where: {
             code: input.code,
           },
@@ -330,6 +363,14 @@ export const productRouter = router({
           },
         });
       }
+      redisClient.hSet("products", updateProduct.code, JSON.stringify(updateProduct));
+      meilisearchClient.index("products").updateDocuments([
+        {
+          code: updateProduct.code,
+          name: updateProduct.name,
+        },
+      ]);
+      return updateProduct;
     }),
   delete: protectedProcedure
     .input(
@@ -338,7 +379,7 @@ export const productRouter = router({
       })
     )
     .mutation(({ ctx, input }) => {
-      redisClient.del("products");
+      redisClient.hDel("products", input.code);
       meilisearchClient.index("products").deleteDocument(input.code);
       ctx.prisma.product.delete({
         where: {
@@ -371,7 +412,8 @@ export const productRouter = router({
         });
       }
       try {
-        redisClient.del("products");
+        redisClient.hSet("products", input.code, JSON.stringify(product));
+        meilisearchClient.index("products").deleteDocument(input.code);
         return await ctx.prisma.product.update({
           where: {
             code: input.code,
@@ -388,7 +430,54 @@ export const productRouter = router({
         });
       }
     }),
-
+  addToStock: adminProcedure
+    .input(
+      z.object({
+        code: z.string().cuid(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const product = await ctx.prisma.product.findUnique({
+        where: {
+          code: input.code,
+        },
+      });
+      if (!product) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Product not found",
+        });
+      }
+      if (product.onSale) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Product is already on sale",
+        });
+      }
+      try {
+        redisClient.hSet("products", input.code, JSON.stringify(product));
+        meilisearchClient.index("products").addDocuments([
+          {
+            code: product.code,
+            name: product.name,
+          },
+        ]);
+        return await ctx.prisma.product.update({
+          where: {
+            code: input.code,
+          },
+          data: {
+            onSale: true,
+            stopSellingFrom: null,
+          },
+        });
+      } catch (err) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong",
+        });
+      }
+    }),
   getTotalRevenue: adminProcedure.query(async ({ ctx }) => {
     const results: never = await ctx.prisma.$queryRaw`SELECT total_revenue()`;
     return results[0]["total_revenue()"] as number;

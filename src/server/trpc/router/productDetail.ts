@@ -6,37 +6,24 @@ import {
   getAllSchema,
   updateProductDetailSchema,
 } from "./dto";
-import { ProductLine } from "@prisma/client";
+import { ProductDetail, ProductLine } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import redisClient from "@utils/redis";
 
 export const productDetailRouter = router({
-  getAll: publicProcedure.input(getAllSchema).query(async ({ ctx, input }) => {
-    try {
-      const cacheResult = await redisClient.get("productDetails");
-      if (cacheResult) {
-        return (await JSON.parse(cacheResult)) as ProductLine[];
-      }
-      const result = await ctx.slavePrisma.productDetail.findMany({
-        skip: input?.skip,
-        take: input?.take,
-      });
-      redisClient.set("productDetails", JSON.stringify(result));
-      return result;
-    } catch (err) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Something went wrong",
-      });
-    }
-  }),
+  getAll: publicProcedure.input(getAllSchema).query(async ({ ctx, input }) =>
+    ctx.slavePrisma.productDetail.findMany({
+      skip: input?.skip,
+      take: input?.take,
+    })
+  ),
   getAllOfProduct: publicProcedure
     .input(
       z.object({
         productCode: z.string().cuid(),
       })
     )
-    .query(({ ctx, input }) =>
+    .query(async ({ ctx, input }) =>
       ctx.slavePrisma.productDetail.findMany({
         where: {
           productCode: input.productCode,
@@ -52,7 +39,7 @@ export const productDetailRouter = router({
         id: z.string().cuid(),
       })
     )
-    .query(({ ctx, input }) =>
+    .query(async ({ ctx, input }) =>
       ctx.slavePrisma.productDetail.findUnique({
         where: {
           id: input.id,
@@ -62,8 +49,7 @@ export const productDetailRouter = router({
         },
       })
     ),
-  create: adminProcedure.input(createProductDetailSchema).query(({ ctx, input }) => {
-    redisClient.del("productDetails");
+  create: adminProcedure.input(createProductDetailSchema).query(async ({ ctx, input }) => {
     ctx.prisma.productDetail.create({
       data: {
         product: {
@@ -75,9 +61,10 @@ export const productDetailRouter = router({
         image: input.image,
       },
     });
+    redisClient.hDel("products", input.productCode);
   }),
-  update: adminProcedure.input(updateProductDetailSchema).query(({ ctx, input }) => {
-    redisClient.del("productDetails");
+  update: adminProcedure.input(updateProductDetailSchema).query(async ({ ctx, input }) =>
+{
     ctx.prisma.productDetail.update({
       where: {
         productCode_colorCode: {
@@ -89,12 +76,14 @@ export const productDetailRouter = router({
         colorCode: input.dto.colorCode,
         image: input.dto.image,
       },
-    });
-  }),
-  delete: adminProcedure.input(deleteProductDetailSchema).query(({ ctx, input }) => {
+    })
+    redisClient.hDel("products", input.productCode);
+ }
+  ),
+  delete: adminProcedure.input(deleteProductDetailSchema).query(async ({ ctx, input }) => {
+    let delProduct: ProductDetail;
     if (!input.id && input.product_color) {
-      redisClient.del("productDetails");
-      return ctx.prisma.productDetail.delete({
+      delProduct = await ctx.prisma.productDetail.delete({
         where: {
           productCode_colorCode: {
             productCode: input.product_color.productCode,
@@ -103,8 +92,7 @@ export const productDetailRouter = router({
         },
       });
     } else if (input.id && !input.product_color) {
-      redisClient.del("productDetails");
-      return ctx.prisma.productDetail.delete({
+      delProduct = await ctx.prisma.productDetail.delete({
         where: {
           id: input.id,
         },
@@ -115,5 +103,6 @@ export const productDetailRouter = router({
         message: "Invalid request",
       });
     }
+    redisClient.hDel("products", delProduct.id);
   }),
 });

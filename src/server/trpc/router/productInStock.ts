@@ -5,27 +5,14 @@ import { adminProcedure, publicProcedure, router } from "../trpc";
 import { getManyProductInStockSchema, updateStockSchema } from "./dto";
 
 export const productInStockRouter = router({
-  getManyWhere: publicProcedure.input(getManyProductInStockSchema).query(async ({ ctx, input }) => {
-    try {
-      const cacheResult = await redisClient.get("productsInStock." + input.productDetailId);
-      if (cacheResult) {
-        return (await JSON.parse(cacheResult)) as ProductInStock[];
-      }
-      const result = await ctx.slavePrisma.productInStock.findMany({
-        where: {
-          productDetailId: input.productDetailId,
-        },
-      });
-      redisClient.set("productsInStock." + input.productDetailId, JSON.stringify(result));
-      return result;
-    } catch (err) {
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Something went wrong",
-      });
-    }
-  }),
-  getOneWhere: publicProcedure.input(getManyProductInStockSchema).query(({ ctx, input }) =>
+  getManyWhere: publicProcedure.input(getManyProductInStockSchema).query(async ({ ctx, input }) =>
+    ctx.slavePrisma.productInStock.findMany({
+      where: {
+        productDetailId: input.productDetailId,
+      },
+    })
+  ),
+  getOneWhere: publicProcedure.input(getManyProductInStockSchema).query(async ({ ctx, input }) =>
     ctx.slavePrisma.productInStock.findUnique({
       where: {
         productDetailId_size: {
@@ -36,9 +23,7 @@ export const productInStockRouter = router({
     })
   ),
   update: adminProcedure.input(updateStockSchema).mutation(async ({ ctx, input }) => {
-    redisClient.del("productsInStock." + input.productDetailId);
-    redisClient.del("products");
-    return ctx.prisma.productInStock.update({
+    const updateProduct = await ctx.prisma.productInStock.update({
       where: {
         productDetailId_size: {
           productDetailId: input.productDetailId,
@@ -48,6 +33,40 @@ export const productInStockRouter = router({
       data: {
         quantity: input.quantity,
       },
+      select: {
+        productDetail: {
+          select: {
+            product: {
+              select: {
+                code: true,
+              },
+            },
+          },
+        },
+      },
     });
+    redisClient.hDel("products", updateProduct.productDetail.product.code);
+  }),
+  delete: adminProcedure.input(getManyProductInStockSchema).mutation(async ({ ctx, input }) => {
+    const deleteProduct = await ctx.prisma.productInStock.delete({
+      where: {
+        productDetailId_size: {
+          productDetailId: input.productDetailId as string,
+          size: input.size as ClothSize,
+        },
+      },
+      select: {
+        productDetail: {
+          select: {
+            product: {
+              select: {
+                code: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    redisClient.hDel("products", deleteProduct.productDetail.product.code);
   }),
 });

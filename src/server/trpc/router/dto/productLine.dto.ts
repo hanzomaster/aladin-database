@@ -1,15 +1,15 @@
 import { Gender } from "@prisma/client";
 import { z } from "zod";
 
-export const getOneProductLineSchema = z
-  .object({
-    id: z.string().cuid(),
-    type_gender: z.object({
+export const getOneProductLineSchema = z.object({
+  id: z.string().cuid(),
+  type_gender: z
+    .object({
       type: z.string().max(50),
       gender: z.nativeEnum(Gender),
-    }),
-  })
-  .partial();
+    })
+    .optional(),
+});
 
 export const getManyProductLineSchema = z
   .object({
