@@ -17,7 +17,8 @@ export const productLineRouter = router({
       for await (const { field, value } of redisClient.hScanIterator("productLines")) {
         cacheResult.push(JSON.parse(value));
       }
-      if (cacheResult) {
+      if (cacheResult.length > 0) {
+        console.log("productLine", cacheResult.length);
         const numberOfProductLines = await ctx.slavePrisma.productLine.count();
         if (cacheResult.length === numberOfProductLines) return cacheResult as ProductLine[];
       }

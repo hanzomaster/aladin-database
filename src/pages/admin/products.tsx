@@ -22,7 +22,7 @@ const Orders: NextPage = () => {
 
   const { data } = trpc.product.getAll.useQuery();
   const [searchResult, setSearchResult] = useState<
-    inferRouterOutputs<AppRouter>["product"]["getAll"] | undefined
+    inferRouterOutputs<AppRouter>["product"]["getAllOnSale"] | undefined
   >(data);
 
   useEffect(() => {
@@ -35,7 +35,7 @@ const Orders: NextPage = () => {
   // Get current posts to paginate
   const lastPostIndex = currentPage * postsPerPage;
   const firstPostIndex = lastPostIndex - postsPerPage;
-  const currentPosts: inferRouterOutputs<AppRouter>["product"]["getAll"] | undefined =
+  const currentPosts: inferRouterOutputs<AppRouter>["product"]["getAllOnSale"] | undefined =
     searchResult?.slice(firstPostIndex, lastPostIndex);
   return (
     <div className="h-full w-full text-sm md:text-base">

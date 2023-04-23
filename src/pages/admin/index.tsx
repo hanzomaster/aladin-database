@@ -20,7 +20,7 @@ function getSumAmountOrders(orders: inferRouterOutputs<AppRouter>["order"]["getA
 const Admin: NextPage = () => {
   const { data: users } = trpc.user.getAll.useQuery();
   const { data: orders } = trpc.order.getAll.useQuery();
-  const { data: products } = trpc.product.getAll.useQuery();
+  const { data: products } = trpc.product.getAllOnSale.useQuery();
   const { data: totalRevenue } = trpc.product.getTotalRevenue.useQuery();
 
   return (
@@ -101,10 +101,13 @@ const Admin: NextPage = () => {
             <div className="p-4">
               <div className="mb-2 text-lg font-semibold text-gray-800 md:text-2xl">
                 {/* {(getSumAmountOrders(orders ?? []) * 600).toLocaleString("vi-VN", { */}
-                {((Number(totalRevenue ) ? Number(totalRevenue) : 0) * 1000).toLocaleString("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                })}
+                {((Number(totalRevenue) ? Number(totalRevenue) : 0) * 1000).toLocaleString(
+                  "vi-VN",
+                  {
+                    style: "currency",
+                    currency: "VND",
+                  }
+                )}
               </div>
               <div className="flex text-sm text-gray-600 md:text-base">
                 <svg
