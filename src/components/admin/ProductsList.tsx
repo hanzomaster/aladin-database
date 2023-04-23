@@ -84,7 +84,9 @@ const ProductsList = ({
                   {product.line?.gender == "M" ? "Nam" : "Nữ"}
                 </td>
                 <td className="whitespace-nowrap px-2 py-3 md:px-6">{product.line?.type}</td>
-                <td className="whitespace-nowrap px-2 py-3 md:px-6">{product.name}</td>
+                <td className="whitespace-nowrap px-2 py-3 md:px-6">
+                  {product.name + "(" + product.onSale + ")"}
+                </td>
 
                 <td className="whitespace-nowrap px-2 py-3 md:px-6">
                   {product.buyPrice.toString()}

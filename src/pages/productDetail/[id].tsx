@@ -353,6 +353,7 @@ const ProductDetail: NextPage = () => {
                         </ul>
                       </div>
                       <button
+                        disabled={product?.onSale}
                         type="submit"
                         onClick={(e) => {
                           e.preventDefault();
