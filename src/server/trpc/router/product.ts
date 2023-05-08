@@ -115,9 +115,6 @@ export const productRouter = router({
   getAllOnSale: publicProcedure.input(getAllSchema).query(async ({ ctx, input }) => {
     try {
       const cacheResult = [];
-      for await (const { field, value } of redisClient.hScanIterator("products")) {
-        cacheResult.push(JSON.parse(value));
-      }
       if (cacheResult.length > 0) {
         console.log("products", cacheResult.length);
         const numberOfProducts = await ctx.slavePrisma.product.count({
@@ -161,9 +158,6 @@ export const productRouter = router({
           },
         },
       });
-      result.forEach((product) => {
-        redisClient.hSet("products", product.code, JSON.stringify(product));
-      });
       return result;
     } catch (err) {
       throw new TRPCError({
@@ -200,7 +194,7 @@ export const productRouter = router({
       })
     )
     .query(async ({ ctx, input }) => {
-      const cacheResult = await redisClient.hGet("products", input.code);
+      const cacheResult = null;
       if (cacheResult) {
         return JSON.parse(cacheResult) as Product & {
           productDetail: (ProductDetail & {
@@ -246,8 +240,6 @@ export const productRouter = router({
           message: "Product not found",
         });
       }
-      redisClient.hSet("products", result.code, JSON.stringify(result));
-      return result;
     }),
   getManyWhere: publicProcedure.input(getManyProductSchema).query(({ ctx, input }) =>
     ctx.slavePrisma.product.findMany({
@@ -334,13 +326,6 @@ export const productRouter = router({
         },
       },
     });
-    redisClient.hSet("products", product.code, JSON.stringify(product));
-    meilisearchClient.index("products").addDocuments([
-      {
-        code: product.code,
-        name: product.name,
-      },
-    ]);
     return product;
   }),
   update: protectedProcedure
@@ -397,15 +382,6 @@ export const productRouter = router({
           },
         });
       }
-      if (updateProduct.onSale === true) {
-        redisClient.hSet("products", updateProduct.code, JSON.stringify(updateProduct));
-        meilisearchClient.index("products").updateDocuments([
-          {
-            code: updateProduct.code,
-            name: updateProduct.name,
-          },
-        ]);
-      }
       return updateProduct;
     }),
   delete: protectedProcedure
@@ -415,13 +391,6 @@ export const productRouter = router({
       })
     )
     .mutation(({ ctx, input }) => {
-      redisClient.hDel("products", input.code);
-      meilisearchClient.index("products").deleteDocument(input.code);
-      ctx.prisma.product.delete({
-        where: {
-          code: input.code,
-        },
-      });
       return true;
     }),
   removeFromStock: adminProcedure
@@ -458,8 +427,6 @@ export const productRouter = router({
             stopSellingFrom: new Date(),
           },
         });
-        redisClient.hDel("products", input.code);
-        meilisearchClient.index("products").deleteDocument(input.code);
         return true;
       } catch (err) {
         throw new TRPCError({
@@ -502,13 +469,6 @@ export const productRouter = router({
             stopSellingFrom: null,
           },
         });
-        redisClient.hSet("products", product.code, JSON.stringify(product));
-        meilisearchClient.index("products").addDocuments([
-          {
-            code: product.code,
-            name: product.name,
-          },
-        ]);
         return true;
       } catch (err) {
         throw new TRPCError({

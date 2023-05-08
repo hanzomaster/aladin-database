@@ -14,9 +14,6 @@ export const productLineRouter = router({
   getAll: publicProcedure.input(getAllSchema).query(async ({ ctx, input }) => {
     try {
       const cacheResult = [];
-      for await (const { field, value } of redisClient.hScanIterator("productLines")) {
-        cacheResult.push(JSON.parse(value));
-      }
       if (cacheResult.length > 0) {
         console.log("productLine", cacheResult.length);
         const numberOfProductLines = await ctx.slavePrisma.productLine.count();
@@ -25,9 +22,6 @@ export const productLineRouter = router({
       const result = await ctx.slavePrisma.productLine.findMany({
         skip: input?.skip,
         take: input?.take,
-      });
-      result.forEach((productLine) => {
-        redisClient.hSet("productLines", productLine.id, JSON.stringify(productLine));
       });
       return result;
     } catch (err) {
@@ -38,7 +32,7 @@ export const productLineRouter = router({
     }
   }),
   getOneWhere: publicProcedure.input(getOneProductLineSchema).query(async ({ ctx, input }) => {
-    const cacheResult = await redisClient.hGet("productLines", input.id);
+    const cacheResult = null;
     if (cacheResult) {
       return JSON.parse(cacheResult) as ProductLine;
     }
@@ -54,7 +48,6 @@ export const productLineRouter = router({
         message: "Product line not found",
       });
     }
-    redisClient.hSet("productLines", result.id, JSON.stringify(result));
     return result;
   }),
   getManyWhere: publicProcedure.input(getManyProductLineSchema).query(({ ctx, input }) =>
@@ -66,7 +59,6 @@ export const productLineRouter = router({
     const product = await ctx.prisma.productLine.create({
       data: input,
     });
-    redisClient.hSet("productLines", product.id, JSON.stringify(product));
     return product;
   }),
   update: adminProcedure
@@ -83,7 +75,6 @@ export const productLineRouter = router({
         },
         data: input.dto,
       });
-      redisClient.hSet("productLines", updateProduct.id, JSON.stringify(input.dto));
       return updateProduct;
     }),
   delete: adminProcedure
@@ -98,6 +89,5 @@ export const productLineRouter = router({
           id: input.id,
         },
       });
-      redisClient.hDel("productLines", delProduct.id);
     }),
 });

@@ -45,7 +45,6 @@ export const productInStockRouter = router({
         },
       },
     });
-    redisClient.hDel("products", updateProduct.productDetail.product.code);
   }),
   delete: adminProcedure.input(getManyProductInStockSchema).mutation(async ({ ctx, input }) => {
     const deleteProduct = await ctx.prisma.productInStock.delete({
@@ -67,6 +66,5 @@ export const productInStockRouter = router({
         },
       },
     });
-    redisClient.hDel("products", deleteProduct.productDetail.product.code);
   }),
 });

@@ -4,9 +4,28 @@
 	// List of extensions which should be recommended for users of this workspace.
 	"recommendations": [
 		"esbenp.prettier-vscode",
-		"Prisma.prisma",
 		"bradlc.vscode-tailwindcss",
+		"formulahendry.auto-rename-tag",
+		"streetsidesoftware.code-spell-checker",
+		"naumovs.color-highlight",
+		"usernamehw.errorlens",
+		"dsznajder.es7-react-js-snippets",
 		"dbaeumer.vscode-eslint",
+		"mhutchie.git-graph",
+		"github.copilot",
+		"github.copilot-labs",
+		"eamodio.gitlens",
+		"visualstudioexptteam.vscodeintellicode",
+		"xabikos.javascriptsnippets",
+		"ms-vsliveshare.vsliveshare",
+		"davidanson.vscode-markdownlint",
+		"pkief.material-icon-theme",
+		"zhuangtongfa.material-theme",
+		"christian-kohler.path-intellisense",
+		"yoavbls.pretty-ts-errors",
+		"prisma.prisma",
+		"albert.tabout",
+		"austenc.tailwind-docs"
 	],
 	// List of extensions recommended by VS Code that should not be recommended for users of this workspace.
 	"unwantedRecommendations": []

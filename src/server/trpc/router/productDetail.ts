@@ -61,10 +61,8 @@ export const productDetailRouter = router({
         image: input.image,
       },
     });
-    redisClient.hDel("products", input.productCode);
   }),
-  update: adminProcedure.input(updateProductDetailSchema).query(async ({ ctx, input }) =>
-{
+  update: adminProcedure.input(updateProductDetailSchema).query(async ({ ctx, input }) => {
     ctx.prisma.productDetail.update({
       where: {
         productCode_colorCode: {
@@ -76,10 +74,8 @@ export const productDetailRouter = router({
         colorCode: input.dto.colorCode,
         image: input.dto.image,
       },
-    })
-    redisClient.hDel("products", input.productCode);
- }
-  ),
+    });
+  }),
   delete: adminProcedure.input(deleteProductDetailSchema).query(async ({ ctx, input }) => {
     let delProduct: ProductDetail;
     if (!input.id && input.product_color) {
@@ -103,6 +99,5 @@ export const productDetailRouter = router({
         message: "Invalid request",
       });
     }
-    redisClient.hDel("products", delProduct.id);
   }),
 });

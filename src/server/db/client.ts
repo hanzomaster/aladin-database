@@ -25,7 +25,7 @@ export const slavePrisma =
     log: env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
     datasources: {
       db: {
-        url: env.SLAVE_DATABASE_URl,
+        url: env.DATABASE_URL,
       },
     },
   });
