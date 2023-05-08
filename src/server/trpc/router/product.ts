@@ -114,7 +114,7 @@ export const productRouter = router({
     }),
   getAllOnSale: publicProcedure.input(getAllSchema).query(async ({ ctx, input }) => {
     try {
-      const cacheResult = [];
+      const cacheResult: string | any[] = [];
       if (cacheResult.length > 0) {
         console.log("products", cacheResult.length);
         const numberOfProducts = await ctx.slavePrisma.product.count({
@@ -166,7 +166,7 @@ export const productRouter = router({
       });
     }
   }),
-  getAll: adminProcedure.input(getAllSchema).query(async ({ ctx, input }) =>
+  getAll: publicProcedure.input(getAllSchema).query(async ({ ctx, input }) =>
     ctx.prisma.product.findMany({
       skip: input?.skip,
       take: input?.take,
@@ -240,6 +240,7 @@ export const productRouter = router({
           message: "Product not found",
         });
       }
+      return result;
     }),
   getManyWhere: publicProcedure.input(getManyProductSchema).query(({ ctx, input }) =>
     ctx.slavePrisma.product.findMany({

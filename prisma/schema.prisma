@@ -1,6 +1,6 @@
 generator client {
     provider        = "prisma-client-js"
-    previewFeatures = ["fullTextSearch", "fullTextIndex"]
+    previewFeatures = ["jsonProtocol"]
 }
 
 // NOTE - Commit this part will break vercel deployment
@@ -12,7 +12,7 @@ generator client {
 datasource db {
     provider     = "mysql"
     url          = env("DATABASE_URL")
-    relationMode = "foreignKeys"
+    relationMode = "prisma"
 }
 
 enum Gender {
@@ -52,6 +52,7 @@ model Comment {
     user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@unique([userId, productId])
+    @@index([productId])
     @@map("comments")
 }
 
@@ -69,7 +70,7 @@ model Product {
 
     line ProductLine @relation(fields: [productLine], references: [id], onDelete: Cascade)
 
-    @@fulltext([name])
+    @@index([productLine])
     @@map("products")
 }
 
@@ -97,6 +98,7 @@ model ProductInStock {
     productDetail ProductDetail @relation(fields: [productDetailId], references: [id], onDelete: Cascade)
 
     @@id([productDetailId, size])
+    @@index([productDetailId])
     @@map("product_in_stock")
 }
 
@@ -128,6 +130,8 @@ model Order {
     customer User    @relation(fields: [customerNumber], references: [id], onDelete: Cascade)
     address  Address @relation(fields: [addressId], references: [id])
 
+    @@index([customerNumber])
+    @@index([addressId])
     @@map("orders")
 }
 
@@ -143,6 +147,8 @@ model OrderDetail {
     productDetail ProductDetail @relation(fields: [productDetailId], references: [id], onDelete: Cascade)
 
     @@id([orderNumber, productDetailId])
+    @@index([orderNumber])
+    @@index([productDetailId])
     @@map("orderdetails")
 }
 
@@ -166,6 +172,7 @@ model CartItem {
     cart          Cart          @relation(fields: [cartId], references: [id], onDelete: Cascade)
 
     @@unique([productDetailId, cartId, size])
+    @@index([cartId])
     @@map("cart_item")
 }
 
@@ -200,6 +207,7 @@ model Address {
     user  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
     Order Order[]
 
+    @@index([userId])
     @@map("addresses")
 }
 
@@ -220,6 +228,7 @@ model Account {
     user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@unique([provider, providerAccountId])
+    @@index([userId])
 }
 
 model Session {
@@ -228,6 +237,8 @@ model Session {
     userId       String
     expires      DateTime
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
 }
 
 model VerificationToken {

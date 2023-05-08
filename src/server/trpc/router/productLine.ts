@@ -13,7 +13,7 @@ import { ProductLine } from "@prisma/client";
 export const productLineRouter = router({
   getAll: publicProcedure.input(getAllSchema).query(async ({ ctx, input }) => {
     try {
-      const cacheResult = [];
+      const cacheResult: string | any[] = [];
       if (cacheResult.length > 0) {
         console.log("productLine", cacheResult.length);
         const numberOfProductLines = await ctx.slavePrisma.productLine.count();
