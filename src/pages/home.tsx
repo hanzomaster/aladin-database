@@ -7,6 +7,7 @@ import ItemCard from "../components/itemCard";
 import NavBar from "../components/navbar";
 import { AppRouter } from "../server/trpc/router/_app";
 import { trpc } from "@utils/trpc";
+import { NextPage } from "next";
 export const postsPerPage = 20;
 
 const Products = () => {
@@ -131,6 +132,8 @@ const Products = () => {
         </div>
       </>
     );
+  } else {
+    return <div>Không có sản phẩm</div>;
   }
 };
 

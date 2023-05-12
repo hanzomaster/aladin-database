@@ -6,13 +6,10 @@ const meilisearchClient = new MeiliSearch({
   apiKey: env.MEILISEARCH_KEY,
 });
 
-const connectMeilisearch = async () => {
-  const index = await meilisearchClient.index("products");
-  if (index) {
-    console.log("Meilisearch client connected...");
-  } else {
+const connectMeilisearch = () => {
+  const index = meilisearchClient.index("products");
+  if (!index) {
     meilisearchClient.createIndex("products");
-    console.log("? Meilisearch client created...");
   }
 };
 

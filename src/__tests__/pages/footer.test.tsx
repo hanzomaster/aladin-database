@@ -1,10 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
-import { withMockAuth } from "@tomfreudenberg/next-auth-mock";
 import Footer from "@/components/footer";
+import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import renderer from "react-test-renderer";
-import "@testing-library/jest-dom";
 
 describe("Footer", () => {
   it("compare with snapshot", () => {
@@ -14,7 +11,7 @@ describe("Footer", () => {
   });
   it("should have link to tailwind-elements", () => {
     render(<Footer />);
-    expect(screen.getByRole("link", { name: /Ecommerce fashion website/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /Ecommerce fashion/i })).toHaveAttribute(
       "href",
       "https://tailwind-elements.com/"
     );

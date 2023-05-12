@@ -4,7 +4,7 @@ const withNextJest = nextJest({
   dir: "./",
 });
 // eslint-disable-next-line import/no-anonymous-default-export
-export default {
+export default withNextJest({
   clearMocks: true,
   coverageProvider: "v8",
   preset: "ts-jest/presets/js-with-ts",
@@ -28,4 +28,4 @@ export default {
     "^~/(.*)$": "<rootDir>/public/$1",
   },
   testPathIgnorePatterns: ["helpers"],
-};
+});

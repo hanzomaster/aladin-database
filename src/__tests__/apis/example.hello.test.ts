@@ -1,6 +1,5 @@
-import { AppRouter, appRouter } from "@/server/trpc/router/_app";
+import { appRouter } from "@/server/trpc/router/_app";
 import { masterPrisma } from "../../server/db/client";
-import { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
 
 test("hello test", async () => {
   const caller = appRouter.createCaller({
@@ -8,10 +7,11 @@ test("hello test", async () => {
     prisma: masterPrisma,
     slavePrisma: masterPrisma,
   });
+  const testStr = "a test";
   const result = await caller.example.hello({
-    text: "testing",
+    text: testStr,
   });
   expect(result).toStrictEqual({
-    greeting: "This is testing",
+    greeting: `This is ${testStr}`,
   });
 });

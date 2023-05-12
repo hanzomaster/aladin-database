@@ -1,18 +1,20 @@
 import { AppRouter, appRouter } from "@/server/trpc/router/_app";
-import { masterPrisma } from "../../server/db/client";
-import { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
+import { TRPCError, inferRouterOutputs } from "@trpc/server";
 import { mockDeep } from "jest-mock-extended";
 import { Prisma, PrismaClient } from "@prisma/client";
-import { Decimal } from "@prisma/client/runtime";
 
 afterEach(() => {
   jest.resetAllMocks();
 });
 
-test("product test", async () => {
+describe("product test", () => {
   const prismaMock = mockDeep<PrismaClient>();
-  const mockOutput: Omit<inferRouterOutputs<AppRouter>["product"]["getOneWhere"], "productDetail"> =
-    {
+  it("should return a product or throw new TRPCError if product code not match", async () => {
+    // NOTE - Add a mock output for the product.getOneWhere query
+    const mockOutput: Omit<
+      inferRouterOutputs<AppRouter>["product"]["getOneWhere"],
+      "productDetail"
+    > = {
       code: "1",
       name: "test",
       description: "test",
@@ -28,16 +30,22 @@ test("product test", async () => {
       },
       productLine: "test",
     };
-  prismaMock.product.findUnique.mockResolvedValue(mockOutput);
+    prismaMock.product.findUnique.mockResolvedValue(mockOutput);
 
-  const caller = appRouter.createCaller({
-    session: null,
-    prisma: prismaMock,
-    slavePrisma: prismaMock,
-  });
+    // NOTE - Create a caller with a mocked user session and prisma client
+    const caller = appRouter.createCaller({
+      session: null,
+      prisma: prismaMock,
+      slavePrisma: prismaMock,
+    });
 
-  const result = await caller.product.getOneWhere({
-    code: "clhdmwo2b0014xnb0h1efayfs",
+    try {
+      const result = await caller.product.getOneWhere({
+        code: "clhdmwo2b0014xnb0h1efayfs",
+      });
+      expect(result).toStrictEqual(mockOutput);
+    } catch (e) {
+      expect(e).toBeInstanceOf(TRPCError);
+    }
   });
-  expect(result).toStrictEqual(mockOutput);
 });

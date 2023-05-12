@@ -1,7 +1,7 @@
 import Link from "next/link";
 import React from "react";
 
-export default function Navbar() {
+export default function AuthNavbar() {
   const [navbarOpen, setNavbarOpen] = React.useState(false);
   return (
     <>

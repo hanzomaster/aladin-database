@@ -205,6 +205,7 @@ const NavBar = () => {
             <div className="relative mx-auto hidden text-gray-600 lg:block">
               <input
                 id="searchBar"
+                data-testid="searchBar"
                 className="h-10 rounded-lg border-2 border-gray-300 bg-white pl-2 pr-8 text-sm focus:outline-none"
                 type="search"
                 name="search"
