@@ -1,10 +1,10 @@
-import type { NextPage } from "next";
+import { trpc } from "@utils/trpc";
+import type { GetServerSideProps, GetServerSidePropsContext, NextPage } from "next";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useS3Upload } from "next-s3-upload";
 import Head from "next/head";
 import Image from "next/image";
 import { useState } from "react";
-import { trpc } from "@utils/trpc";
 
 const Home: NextPage = () => {
   const hello = trpc.example.hello.useQuery();
@@ -129,4 +129,15 @@ const TechnologyCard = ({ name, description, documentation }: TechnologyCardProp
       </a>
     </section>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (
+  context: GetServerSidePropsContext
+) => {
+  return {
+    redirect: {
+      destination: "/home",
+      permanent: false,
+    },
+  };
 };

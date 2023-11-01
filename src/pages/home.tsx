@@ -1,13 +1,11 @@
-import { Product } from "@prisma/client";
 import { inferRouterOutputs } from "@trpc/server";
+import { trpc } from "@utils/trpc";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import Pagination from "../components/Pagination";
 import ItemCard from "../components/itemCard";
 import NavBar from "../components/navbar";
 import { AppRouter } from "../server/trpc/router/_app";
-import { trpc } from "@utils/trpc";
-import { NextPage } from "next";
 export const postsPerPage = 20;
 
 const Products = () => {
@@ -29,8 +27,6 @@ const Products = () => {
   if (!gender && name) {
     // const [name, setName] = useState("");
     const { data } = trpc.product.search.useQuery({ name: name as string });
-    const currentPosts: inferRouterOutputs<AppRouter>["product"]["search"] | undefined =
-      data?.slice(firstPostIndex, lastPostIndex);
     return (
       <>
         <section>

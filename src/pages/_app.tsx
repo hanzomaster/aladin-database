@@ -5,6 +5,7 @@ import type { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import type { AppType } from "next/app";
 import Head from "next/head";
+import { redirect } from "react-router-dom";
 import { ToastProvider } from "../components/Toast";
 import Footer from "../components/footer";
 import { CartProvider } from "../context/CartContext";
@@ -16,6 +17,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
+  redirect("/home");
   return (
     <SessionProvider session={session}>
       <CartProvider>
